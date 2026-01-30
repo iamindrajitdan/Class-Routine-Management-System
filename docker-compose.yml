@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   # PostgreSQL Database
   postgres:
@@ -83,12 +81,8 @@ services:
       - "${FRONTEND_PORT:-3001}:3000"
     depends_on:
       - api
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     networks:
       - crms-network
-    command: npm start
 
   # Optimization Service (Python)
   optimizer:
@@ -101,16 +95,14 @@ services:
       OPTIMIZER_PORT: ${OPTIMIZER_PORT:-5000}
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      FLASK_ENV: ${NODE_ENV:-development}
     ports:
       - "${OPTIMIZER_PORT:-5000}:5000"
     depends_on:
       redis:
         condition: service_healthy
-    volumes:
-      - ./optimizer:/app
     networks:
       - crms-network
-    command: python -m flask run --host=0.0.0.0
 
 volumes:
   postgres_data:

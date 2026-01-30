@@ -21,8 +21,8 @@ This is a full-stack SaaS application designed for academic institutions to mana
 
 ```bash
 # Clone repository
-git clone <repo-url>
-cd class-routine-management
+git clone https://github.com/iamindrajitdan/Class-Routine-Management-System.git
+cd Class-Routine-Management-System
 
 # Install dependencies
 npm install
