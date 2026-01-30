@@ -1,0 +1,123 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    container_name: crms-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-crms_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-crms_password}
+      POSTGRES_DB: ${DB_NAME:-crms_db}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-crms_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - crms-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: crms-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - crms-network
+
+  # Backend API Service
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: crms-api
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${API_PORT:-3000}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-crms_user}
+      DB_PASSWORD: ${DB_PASSWORD:-crms_password}
+      DB_NAME: ${DB_NAME:-crms_db}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-key-change-in-production}
+      API_URL: ${API_URL:-http://localhost:3000}
+    ports:
+      - "${API_PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - crms-network
+    command: npm run dev
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: crms-frontend
+    environment:
+      REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:3000}
+      REACT_APP_ENV: ${NODE_ENV:-development}
+    ports:
+      - "${FRONTEND_PORT:-3001}:3000"
+    depends_on:
+      - api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - crms-network
+    command: npm start
+
+  # Optimization Service (Python)
+  optimizer:
+    build:
+      context: ./optimizer
+      dockerfile: Dockerfile
+    container_name: crms-optimizer
+    environment:
+      PYTHONUNBUFFERED: 1
+      OPTIMIZER_PORT: ${OPTIMIZER_PORT:-5000}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "${OPTIMIZER_PORT:-5000}:5000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./optimizer:/app
+    networks:
+      - crms-network
+    command: python -m flask run --host=0.0.0.0
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  crms-network:
+    driver: bridge
