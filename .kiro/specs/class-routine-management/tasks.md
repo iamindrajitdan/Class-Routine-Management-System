@@ -10,7 +10,7 @@ This implementation plan breaks down the Class Routine Management System into ac
   - Create multi-module Maven project (parent, api, optimizer, frontend)
   - Set up Git repository with branch protection rules
   - Configure .gitignore for Java/Maven projects
-2_
+  - _Requirements: 20.1, 20.2_
 
 - [ ] 1.2 Configure Spring Boot parent POM and dependencies
   - Set up Spring Boot 3.2+ parent POM
@@ -430,7 +430,7 @@ oller with @RestController
   - Implement export functionality
   - _Requirements: 10.5, 10.6_
 
-Accessibility Features
+- [ ] 11.3 Implement Accessibility Features
   - Ensure WCAG 2.1 Level AA compliance
   - Implement screen reader support
   - Implement keyboard navigation
@@ -460,7 +460,7 @@ Accessibility Features
   - Test substitute allocation with conflict checking
   - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-Service
+- [ ] 12.4 Write unit tests for Calendar Service
   - Test holiday constraint enforcement
   - Test exam period suspension
   - _Requirements: 4.1, 4.2_

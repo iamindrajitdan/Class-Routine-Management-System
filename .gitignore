@@ -1,41 +1,55 @@
-# Dependencies
-node_modules/
-__pycache__/
-*.pyc
-*.pyo
-*.egg-info/
-dist/
-build/
+# Java/Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.ctxt
+.mtj.tmp/
+hs_err_pid*
+replay_pid*
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+*.swp
+*.swo
+*~
+.DS_Store
+.classpath
+.project
+.settings/
+bin/
 
 # Environment variables
 .env
 .env.local
 .env.*.local
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Build outputs
-dist/
-build/
-*.tsbuildinfo
-
 # Logs
 logs/
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # Testing
 coverage/
 .nyc_output/
 .pytest_cache/
+test-output/
 
 # OS
 Thumbs.db
@@ -48,3 +62,12 @@ Thumbs.db
 tmp/
 temp/
 *.tmp
+
+# Spring Boot
+spring-boot-devtools.properties
+
+# Security - JWT keys
+*.pem
+*.key
+!src/main/resources/*.pem
+!src/test/resources/*.pem

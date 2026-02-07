@@ -128,6 +128,12 @@
             <artifactId>quicktheories</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Bucket4j for rate limiting -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j-core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

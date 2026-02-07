@@ -1,0 +1,84 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:14-alpine
+        env:
+          POSTGRES_USER: crms_user
+          POSTGRES_PASSWORD: crms_password
+          POSTGRES_DB: crms_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: Build with Maven
+      run: mvn clean package -DskipTests
+    
+    - name: Run tests
+      run: mvn test
+      env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_USER: crms_user
+        DB_PASSWORD: crms_password
+        DB_NAME: crms_db
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+    
+    - name: SonarQube Analysis
+      run: mvn sonar:sonar -Dsonar.projectKey=crms -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      if: github.event_name == 'push'
+    
+    - name: Build Docker image
+      run: docker build -t crms-api:${{ github.sha }} -t crms-api:latest crms-api/
+    
+    - name: Push Docker image
+      run: |
+        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        docker tag crms-api:latest ${{ secrets.DOCKER_REGISTRY }}/crms-api:${{ github.sha }}
+        docker tag crms-api:latest ${{ secrets.DOCKER_REGISTRY }}/crms-api:latest
+        docker push ${{ secrets.DOCKER_REGISTRY }}/crms-api:${{ github.sha }}
+        docker push ${{ secrets.DOCKER_REGISTRY }}/crms-api:latest
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl set image deployment/crms-api crms-api=${{ secrets.DOCKER_REGISTRY }}/crms-api:${{ github.sha }} --record
+        kubectl rollout status deployment/crms-api
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      env:
+        KUBECONFIG: ${{ secrets.KUBECONFIG }}
