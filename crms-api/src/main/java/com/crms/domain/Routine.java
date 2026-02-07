@@ -58,10 +58,12 @@ public class Routine {
     @JoinColumn(name = "classroom_id", nullable = false)
     private Classroom classroom;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private RoutineType routineType = RoutineType.REGULAR;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private RoutineStatus status = RoutineStatus.ACTIVE;

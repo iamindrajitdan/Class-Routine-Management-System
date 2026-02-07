@@ -14,20 +14,60 @@
 git clone <repository-url>
 cd crms
 
-# 2. Start all services
+# 2. Build the JAR locally first (RECOMMENDED)
+mvn clean package -DskipTests
+
+# 3. Start all services
 docker-compose up -d
 
-# 3. Wait for services to be healthy (30-60 seconds)
+# 4. Wait for services to be healthy (30-60 seconds)
 docker-compose ps
 
-# 4. Access the application
+# 5. Access the application
 # API: http://localhost:8080
 # Swagger UI: http://localhost:8080/swagger-ui.html
 # PostgreSQL: localhost:5432
 # Redis: localhost:6379
 ```
 
-### Option 2: Local Development
+**Note**: Building locally first is more reliable than building inside Docker.
+
+### Option 2: Using Build Script (Linux/Mac)
+
+```bash
+# 1. Clone the repository
+git clone <repository-url>
+cd crms
+
+# 2. Make build script executable
+chmod +x build.sh
+
+# 3. Build everything and start services
+./build.sh all
+./build.sh start
+
+# 4. Access the application
+# API: http://localhost:8080
+# Swagger UI: http://localhost:8080/swagger-ui.html
+```
+
+### Option 3: Using Build Script (Windows)
+
+```cmd
+# 1. Clone the repository
+git clone <repository-url>
+cd crms
+
+# 2. Build everything and start services
+build.bat all
+build.bat start
+
+# 3. Access the application
+# API: http://localhost:8080
+# Swagger UI: http://localhost:8080/swagger-ui.html
+```
+
+### Option 4: Local Development
 
 ```bash
 # 1. Clone the repository
@@ -195,6 +235,39 @@ docker-compose down -v
 
 ## Troubleshooting
 
+### Docker Build Fails
+
+If you encounter Docker build errors like `mvn clean package` failing inside Docker:
+
+**Solution 1 (Recommended): Build Locally First**
+```bash
+# Build the JAR on your machine
+mvn clean package -DskipTests
+
+# Then start Docker Compose (uses pre-built JAR)
+docker-compose up -d
+```
+
+**Solution 2: Use Simplified Dockerfile**
+```bash
+# Build with simplified Dockerfile (no Maven inside Docker)
+docker build -t crms-api:latest -f crms-api/Dockerfile.prebuilt .
+docker-compose up -d
+```
+
+**Solution 3: Increase Docker Memory**
+- Docker Desktop → Preferences → Resources → Memory (set to 4GB+)
+- Then try: `docker-compose up -d --build`
+
+**Solution 4: Clear Maven Cache**
+```bash
+rm -rf ~/.m2/repository
+mvn clean package -DskipTests
+docker-compose up -d
+```
+
+For more detailed troubleshooting, see `BUILD_GUIDE.md`.
+
 ### Port Already in Use
 
 ```bash
@@ -229,6 +302,21 @@ docker exec crms-redis redis-cli ping
 
 # Restart Redis
 docker-compose restart redis
+```
+
+### Build Script Issues
+
+```bash
+# Linux/Mac: Make script executable
+chmod +x build.sh
+
+# View available commands
+./build.sh help      # Linux/Mac
+build.bat help       # Windows
+
+# Clean and rebuild
+./build.sh clean     # Linux/Mac
+build.bat clean      # Windows
 ```
 
 ## Default Credentials

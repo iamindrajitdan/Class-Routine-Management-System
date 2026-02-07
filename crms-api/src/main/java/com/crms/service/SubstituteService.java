@@ -30,6 +30,9 @@ public class SubstituteService {
     private TeacherRepository teacherRepository;
 
     @Autowired
+    private RoutineRepository routineRepository;
+
+    @Autowired
     private ConflictDetectionService conflictDetectionService;
 
     @Cacheable(value = "substitutes", key = "#id")

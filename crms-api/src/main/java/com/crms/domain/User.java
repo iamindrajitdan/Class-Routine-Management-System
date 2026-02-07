@@ -51,6 +51,7 @@ public class User {
     @JoinColumn(name = "department_id")
     private Department department;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean isActive = true;
 

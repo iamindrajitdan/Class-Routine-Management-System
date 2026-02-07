@@ -5,20 +5,15 @@
 FROM maven:3.9-eclipse-temurin-17 AS builder
 WORKDIR /app
 
-# Copy parent POM
+# Copy all POM files
 COPY pom.xml .
-
-# Copy module POM
 COPY crms-api/pom.xml crms-api/
-
-# Download dependencies
-RUN mvn dependency:go-offline -B
 
 # Copy source code
 COPY crms-api/src crms-api/src
 
 # Build application
-RUN mvn clean package -DskipTests -f crms-api/pom.xml
+RUN mvn clean package -DskipTests -pl crms-api -am
 
 # Stage 2: Runtime
 FROM eclipse-temurin:17-jre-alpine
