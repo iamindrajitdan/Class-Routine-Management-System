@@ -1,0 +1,81 @@
+# Docker Compose for Class Routine Management System (Java)
+# Requirements: 20.1, 20.2
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    container_name: crms-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-crms_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-crms_password}
+      POSTGRES_DB: ${DB_NAME:-crms_db}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-crms_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - crms-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: crms-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - crms-network
+
+  # Spring Boot API Service
+  api:
+    build:
+      context: .
+      dockerfile: crms-api/Dockerfile
+    container_name: crms-api
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-crms_user}
+      DB_PASSWORD: ${DB_PASSWORD:-crms_password}
+      DB_NAME: ${DB_NAME:-crms_db}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-key-change-in-production}
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - crms-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  crms-network:
+    driver: bridge
