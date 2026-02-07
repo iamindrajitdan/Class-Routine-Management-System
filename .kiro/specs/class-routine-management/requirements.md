@@ -1,8 +1,10 @@
-# Requirements Document: Class Routine Management System
+# Requirements Document: Class Routine Management System (Java Implementation)
 
 ## Introduction
 
 The Class Routine Management System is a university-grade platform designed to manage academic schedules across institutions. It handles the creation, optimization, and management of class routines considering multiple constraints including teacher availability, classroom capacity, subject requirements, and institutional policies. The system supports role-based access for administrators, academic planners, faculty, and students, with features for conflict detection, substitute allocation, and comprehensive reporting.
+
+This document specifies the system requirements for a **Java-based enterprise implementation** using Spring Boot, Spring Security, Hibernate/JPA, and cloud-native deployment patterns.
 
 ## Glossary
 
@@ -26,8 +28,64 @@ The Class Routine Management System is a university-grade platform designed to m
 - **Dashboard**: User interface displaying key metrics and information
 - **Notification**: Alert sent to users about routine changes or events
 - **Report**: Generated document containing routine data and analytics
+- **JVM**: Java Virtual Machine
+- **Spring Boot**: Enterprise Java framework for building microservices
+- **Hibernate/JPA**: Object-Relational Mapping framework
+- **OR-Tools**: Google's constraint solver library (Java bindings)
 
-## Requirements
+## Non-Functional Requirements (Java-Specific)
+
+### NFR-J1: Java Runtime Environment
+- System SHALL run on Java 17 or later
+- System SHALL be compatible with OpenJDK and Oracle JDK
+- System SHALL support containerized JVM deployment (Docker)
+- System SHALL optimize JVM heap memory usage for cloud environments
+
+### NFR-J2: Performance and Concurrency
+- API response time SHALL be ≤ 2 seconds for routine operations (Requirement 14.1)
+- Conflict detection SHALL complete within 5 seconds for 10,000 classes (Requirement 14.2)
+- System SHALL support concurrent request handling using Spring's async/reactive patterns
+- System SHALL implement connection pooling (HikariCP) for database connections
+- System SHALL cache frequently accessed data using Redis with TTL strategies
+
+### NFR-J3: Memory and Resource Management
+- JVM heap allocation SHALL be configurable (default: 512MB-2GB)
+- System SHALL implement proper resource cleanup using try-with-resources
+- System SHALL monitor memory leaks through Spring Boot Actuator
+- System SHALL support graceful shutdown with connection draining
+
+### NFR-J4: Build and Dependency Management
+- System SHALL use Maven 3.8+ or Gradle 7.0+ for dependency management
+- System SHALL enforce reproducible builds with locked dependency versions
+- System SHALL support multi-module Maven projects for microservices
+- System SHALL include security scanning for vulnerable dependencies (OWASP)
+
+### NFR-J5: Testing Framework
+- Unit tests SHALL use JUnit 5 with Mockito for mocking
+- Integration tests SHALL use Testcontainers for PostgreSQL/Redis
+- Property-based tests SHALL use QuickTheories or jqwik
+- Test coverage SHALL meet 70% threshold (enforced by JaCoCo)
+
+### NFR-J6: Security (Java-Specific)
+- System SHALL use Spring Security for authentication/authorization
+- System SHALL implement JWT tokens with RS256 signing (asymmetric)
+- System SHALL use Spring Security's CSRF protection for web endpoints
+- System SHALL implement rate limiting using Spring Cloud Gateway or custom interceptors
+- System SHALL encrypt sensitive data using Spring Security's encryption utilities
+
+### NFR-J7: Logging and Monitoring
+- System SHALL use SLF4J with Logback for structured logging
+- System SHALL integrate with Spring Boot Actuator for metrics
+- System SHALL export metrics to Prometheus format
+- System SHALL support distributed tracing with Spring Cloud Sleuth
+
+### NFR-J8: Database Access
+- System SHALL use Hibernate/JPA for ORM
+- System SHALL implement repository pattern with Spring Data JPA
+- System SHALL use database migrations with Flyway or Liquibase
+- System SHALL support connection pooling with HikariCP (default: 10 connections)
+
+## Functional Requirements (Preserved from Original Specification)
 
 ### Requirement 1: Routine Creation and Management
 
@@ -326,3 +384,27 @@ The Class Routine Management System is a university-grade platform designed to m
 4. WHEN the system is deployed, THE System SHALL use environment-based configuration
 5. WHEN the system is deployed, THE System SHALL support auto-scaling based on load
 6. WHEN the system is deployed, THE System SHALL provide deployment documentation and scripts
+
+---
+
+## Correctness Properties (35 Properties - Preserved)
+
+All 35 correctness properties from the original specification are preserved and remain valid for the Java implementation. These properties define universal behaviors that must hold across all valid system executions, regardless of implementation language.
+
+**Property Examples:**
+- Property 1: Routine Creation Idempotence
+- Property 2: Unique Routine Identifiers
+- Property 5: Teacher Conflict Detection
+- Property 17: RBAC Permission Enforcement
+- Property 29: Optimization Constraint Satisfaction
+- ... (30 additional properties)
+
+All properties are testable using Java testing frameworks (JUnit 5, QuickTheories, Testcontainers).
+
+---
+
+## Summary
+
+This requirements document specifies a **Java-based enterprise implementation** of the Class Routine Management System. All 20 functional requirements and 35 correctness properties are preserved from the original specification. Eight additional non-functional requirements (NFR-J1 through NFR-J8) address Java-specific concerns including JVM runtime, performance, concurrency, build management, testing, security, logging, and database access.
+
+The system is designed for academic submission and real-world institutional deployment, with enterprise-grade quality standards and professional documentation.

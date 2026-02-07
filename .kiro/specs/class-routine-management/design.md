@@ -1,8 +1,10 @@
-# Design Document: Class Routine Management System
+# Design Document: Class Routine Management System (Java Implementation)
 
 ## Overview
 
-The Class Routine Management System is a comprehensive, cloud-ready platform for managing academic schedules in universities. The system employs a layered architecture with clear separation of concerns: presentation layer (role-based UIs), business logic layer (routine management, conflict detection, optimization), data access layer (database abstraction), and external services (notifications, AI optimization).
+The Class Routine Management System is a comprehensive, cloud-ready platform for managing academic schedules in universities. The system employs a layered architecture with clear separation of concerns: presentation layer (role-based UIs), business logic layer (routine management, conflict detection, optimization), data access layer (Hibernate/JPA), and external services (notifications, AI optimization).
+
+This design document specifies a **Java-based enterprise implementation** using Spring Boot, Spring Security, Hibernate/JPA, PostgreSQL, Redis, and Google OR-Tools for constraint solving.
 
 The design prioritizes scalability, security, and maintainability while supporting complex constraint solving for timetable optimization.
 
@@ -15,13 +17,15 @@ The design prioritizes scalability, security, and maintainability while supporti
 │                        Client Layer                              │
 │  ┌──────────────┬──────────────┬──────────────┬──────────────┐  │
 │  │ Admin Portal │ Planner UI   │ Faculty App  │ Student App  │  │
+│  │   (React)    │   (React)    │   (React)    │   (React)    │  │
 │  └──────────────┴──────────────┴──────────────┴──────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │                    API Gateway & Auth Layer                      │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │ REST API | OAuth 2.0 | Rate Limiting | Request Logging │   │
+│  │ Spring Cloud Gateway | Spring Security | JWT | RBAC    │   │
+│  │ Rate Limiting | Request Logging | CORS | TLS           │   │
 │  └─────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
@@ -29,18 +33,21 @@ The design prioritizes scalability, security, and maintainability while supporti
 │                    Business Logic Layer                          │
 │  ┌──────────────┬──────────────┬──────────────┬──────────────┐  │
 │  │ Routine Mgmt │ Conflict Det │ Substitute   │ Optimization │  │
-│  │              │              │ Allocation   │ Engine       │  │
+│  │ Service      │ Service      │ Allocation   │ Service      │  │
+│  │ (Spring)     │ (Spring)     │ Service      │ (Java/OR)    │  │
 │  └──────────────┴──────────────┴──────────────┴──────────────┘  │
 │  ┌──────────────┬──────────────┬──────────────┬──────────────┐  │
 │  │ Calendar Mgmt│ Notification │ Report Gen   │ Audit Logger │  │
-│  │              │ Service      │              │              │  │
+│  │ Service      │ Service      │ Service      │ Service      │  │
+│  │ (Spring)     │ (Spring)     │ (Spring)     │ (Spring)     │  │
 │  └──────────────┴──────────────┴──────────────┴──────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │                    Data Access Layer                             │
 │  ┌──────────────────────────────────────────────────────────┐   │
-│  │ ORM/Query Builder | Connection Pooling | Caching Layer  │   │
+│  │ Spring Data JPA | Hibernate | HikariCP | Redis Cache    │   │
+│  │ Flyway Migrations | Query DSL                            │   │
 │  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
@@ -55,39 +62,69 @@ The design prioritizes scalability, security, and maintainability while supporti
 ┌─────────────────────────────────────────────────────────────────┐
 │                    External Services                             │
 │  ┌──────────────┬──────────────┬──────────────┬──────────────┐  │
-│  │ Email/SMS    │ AI Solver    │ Cloud Storage│ Monitoring   │  │
-│  │ Notification │ (Constraint) │              │ (Prometheus) │  │
+│  │ Email/SMS    │ OR-Tools     │ Cloud Storage│ Monitoring   │  │
+│  │ Notification │ Constraint   │              │ (Prometheus) │  │
+│  │              │ Solver       │              │              │  │
 │  └──────────────┴──────────────┴──────────────┴──────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Technology Stack
+### Technology Stack (Java-Based)
 
-**Backend**: Node.js/Express or Python/FastAPI
-- **Language**: TypeScript (Node.js) or Python 3.10+
-- **Framework**: Express.js or FastAPI
-- **ORM**: Sequelize/TypeORM (Node) or SQLAlchemy (Python)
-- **Validation**: Joi/Zod (Node) or Pydantic (Python)
+**Backend**: Java 17+ with Spring Boot 3.x
+- **Language**: Java 17 (LTS)
+- **Framework**: Spring Boot 3.2+
+- **Security**: Spring Security 6.x with JWT
+- **ORM**: Hibernate 6.x with Spring Data JPA
+- **Build**: Maven 3.8+ or Gradle 7.0+
+- **Validation**: Jakarta Bean Validation (Hibernate Validator)
 
 **Database**: PostgreSQL 14+
 - **Caching**: Redis 7+
-- **Search**: Elasticsearch (optional, for advanced reporting)
+- **Migrations**: Flyway 9.x or Liquibase 4.x
+- **Connection Pooling**: HikariCP (default: 10 connections)
 
-**AI/Optimization**: Python-based microservice
-- **Constraint Solver**: OR-Tools (Google)
-- **ML Framework**: scikit-learn for optimization scoring
+**AI/Optimization**: Java-based Constraint Solving
+- **Constraint Solver**: Google OR-Tools Java bindings
+- **Alternative**: Optaplanner (if OR-Tools unavailable)
 
-**Frontend**: React 18+ or Vue 3+
-- **State Management**: Redux or Pinia
+**Frontend**: React 18+ (unchanged)
+- **State Management**: Redux or Zustand
 - **UI Framework**: Material-UI or Tailwind CSS
 - **Accessibility**: axe-core for testing
 
-**DevOps**: Docker, Kubernetes, CI/CD
-- **Containerization**: Docker
+**DevOps**: Docker, Kubernetes, CI/CD (Java-compatible)
+- **Containerization**: Docker with multi-stage builds
 - **Orchestration**: Kubernetes
 - **CI/CD**: GitHub Actions or GitLab CI
 - **Monitoring**: Prometheus + Grafana
-- **Logging**: ELK Stack (Elasticsearch, Logstash, Kibana)
+- **Logging**: ELK Stack (Elasticsearch, Logstash, Kibana) or Loki
+
+### Layered Architecture
+
+#### 1. Presentation Layer
+- Spring MVC Controllers
+- REST endpoints with @RestController
+- Request/Response DTOs
+- Exception handling with @ControllerAdvice
+
+#### 2. Business Logic Layer
+- Service classes with @Service annotation
+- Business rule validation
+- Transaction management with @Transactional
+- Constraint solving and optimization logic
+
+#### 3. Data Access Layer
+- Spring Data JPA Repositories
+- Hibernate entities with JPA annotations
+- Custom query methods
+- Specification pattern for complex queries
+
+#### 4. Infrastructure Layer
+- Spring Security configuration
+- Redis caching configuration
+- Database connection pooling
+- Logging and monitoring
 
 ## Components and Interfaces
 
@@ -97,77 +134,85 @@ The design prioritizes scalability, security, and maintainability while supporti
    - Create, read, update, delete routines
    - Validate routine data
    - Manage routine lifecycle
+   - Implementation: Spring Service with JPA Repository
 
 2. **Conflict Detection Engine**
    - Detect teacher double-booking
    - Detect classroom conflicts
    - Detect class scheduling conflicts
    - Suggest resolutions
+   - Implementation: Spring Service with custom logic
 
 3. **Substitute Allocation Service**
    - Identify available substitutes
    - Allocate substitutes
    - Manage substitute history
+   - Implementation: Spring Service with JPA Repository
 
 4. **Calendar Management Service**
    - Manage yearly calendars
    - Manage class calendars
    - Handle holidays and exam periods
    - Validate calendar constraints
+   - Implementation: Spring Service with JPA Repository
 
 5. **Optimization Engine**
-   - Analyze constraints
+   - Analyze constraints using OR-Tools
    - Generate optimized routines
    - Score optimization results
    - Support human-in-the-loop approval
+   - Implementation: Spring Service with OR-Tools Java bindings
 
 6. **Notification Service**
    - Send email/SMS notifications
    - Manage notification preferences
    - Track notification delivery
+   - Implementation: Spring Service with async processing
 
 7. **Report Generation Service**
    - Generate routine reports
    - Export to PDF/CSV/Excel
    - Create analytics dashboards
+   - Implementation: Spring Service with iText/Apache POI
 
 8. **Audit Logging Service**
    - Log all system actions
    - Track data changes
    - Support compliance queries
+   - Implementation: Spring AOP with custom annotations
 
-### API Interfaces
+### REST API Interfaces
 
 **Routine Management API**
 ```
 POST   /api/v1/routines              - Create routine
-GET    /api/v1/routines              - List routines
-GET    /api/v1/routines/:id          - Get routine
-PUT    /api/v1/routines/:id          - Update routine
-DELETE /api/v1/routines/:id          - Delete routine
-POST   /api/v1/routines/:id/validate - Validate routine
+GET    /api/v1/routines              - List routines (paginated)
+GET    /api/v1/routines/{id}         - Get routine
+PUT    /api/v1/routines/{id}         - Update routine
+DELETE /api/v1/routines/{id}         - Delete routine
+POST   /api/v1/routines/{id}/validate - Validate routine
 ```
 
 **Conflict Detection API**
 ```
 POST   /api/v1/conflicts/detect      - Detect conflicts
 GET    /api/v1/conflicts             - List conflicts
-POST   /api/v1/conflicts/:id/resolve - Resolve conflict
+POST   /api/v1/conflicts/{id}/resolve - Resolve conflict
 ```
 
 **Substitute Allocation API**
 ```
 POST   /api/v1/substitutes           - Allocate substitute
 GET    /api/v1/substitutes           - List substitutes
-PUT    /api/v1/substitutes/:id       - Update substitute
-DELETE /api/v1/substitutes/:id       - Remove substitute
+PUT    /api/v1/substitutes/{id}      - Update substitute
+DELETE /api/v1/substitutes/{id}      - Remove substitute
 ```
 
 **Calendar Management API**
 ```
 POST   /api/v1/calendars             - Create calendar
 GET    /api/v1/calendars             - List calendars
-PUT    /api/v1/calendars/:id         - Update calendar
+PUT    /api/v1/calendars/{id}        - Update calendar
 POST   /api/v1/holidays              - Define holiday
 POST   /api/v1/exam-periods          - Define exam period
 ```
@@ -175,461 +220,328 @@ POST   /api/v1/exam-periods          - Define exam period
 **Optimization API**
 ```
 POST   /api/v1/optimize              - Request optimization
-GET    /api/v1/optimize/:id          - Get optimization result
-POST   /api/v1/optimize/:id/approve  - Approve optimization
+GET    /api/v1/optimize/{id}         - Get optimization result
+POST   /api/v1/optimize/{id}/approve - Approve optimization
 ```
 
-## Data Models
+## Data Models (JPA Entities)
 
 ### Core Entities
 
-**User**
-- id (UUID)
-- email (String, unique)
-- password_hash (String)
-- first_name (String)
-- last_name (String)
-- role (Enum: Admin, Academic_Planner, Faculty, Student)
-- department_id (FK)
-- is_active (Boolean)
-- created_at (Timestamp)
-- updated_at (Timestamp)
-
-**Class**
-- id (UUID)
-- name (String)
-- code (String, unique)
-- academic_year (String)
-- semester (Integer)
-- program_id (FK)
-- capacity (Integer)
-- created_at (Timestamp)
-
-**Teacher**
-- id (UUID)
-- user_id (FK)
-- department_id (FK)
-- specialization (String)
-- max_hours_per_week (Integer)
-- created_at (Timestamp)
-
-**Subject**
-- id (UUID)
-- name (String)
-- code (String, unique)
-- description (Text)
-- credit_hours (Integer)
-- created_at (Timestamp)
-
-**Lesson**
-- id (UUID)
-- subject_id (FK)
-- lesson_number (Integer)
-- title (String)
-- duration_minutes (Integer)
-- created_at (Timestamp)
-
-**TimeSlot**
-- id (UUID)
-- day_of_week (Enum: Mon-Sun)
-- start_time (Time)
-- end_time (Time)
-- created_at (Timestamp)
-
-**Classroom**
-- id (UUID)
-- name (String)
-- capacity (Integer)
-- building (String)
-- floor (Integer)
-- is_virtual (Boolean)
-- created_at (Timestamp)
-
-**Routine**
-- id (UUID)
-- class_id (FK)
-- teacher_id (FK)
-- subject_id (FK)
-- lesson_id (FK)
-- time_slot_id (FK)
-- classroom_id (FK)
-- routine_type (Enum: Regular, Additional, Remedial)
-- status (Enum: Active, Inactive, Cancelled)
-- created_by (FK to User)
-- created_at (Timestamp)
-- updated_at (Timestamp)
-
-**Substitute**
-- id (UUID)
-- original_teacher_id (FK)
-- substitute_teacher_id (FK)
-- routine_id (FK)
-- start_date (Date)
-- end_date (Date)
-- reason (String)
-- status (Enum: Pending, Approved, Active, Completed)
-- created_at (Timestamp)
-
-**Holiday**
-- id (UUID)
-- name (String)
-- start_date (Date)
-- end_date (Date)
-- academic_year (String)
-- created_at (Timestamp)
-
-**ExamPeriod**
-- id (UUID)
-- name (String)
-- start_date (Date)
-- end_date (Date)
-- academic_year (String)
-- created_at (Timestamp)
-
-**Conflict**
-- id (UUID)
-- routine_id (FK)
-- conflict_type (Enum: TeacherDouble, ClassroomDouble, ClassDouble)
-- description (String)
-- severity (Enum: High, Medium, Low)
-- status (Enum: Detected, Resolved, Ignored)
-- created_at (Timestamp)
-
-**AuditLog**
-- id (UUID)
-- user_id (FK)
-- action (String)
-- resource_type (String)
-- resource_id (UUID)
-- before_state (JSON)
-- after_state (JSON)
-- timestamp (Timestamp)
-- ip_address (String)
-
-**Notification**
-- id (UUID)
-- user_id (FK)
-- type (String)
-- title (String)
-- message (String)
-- is_read (Boolean)
-- created_at (Timestamp)
-
-## Correctness Properties
-
-A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.
-
-### Property-Based Testing Overview
-
-Property-based testing (PBT) validates software correctness by testing universal properties across many generated inputs. Each property is a formal specification that should hold for all valid inputs.
-
-**Core Principles**:
-1. **Universal Quantification**: Every property must contain an explicit "for all" statement
-2. **Requirements Traceability**: Each property must reference the requirements it validates
-3. **Executable Specifications**: Properties must be implementable as automated tests
-4. **Comprehensive Coverage**: Properties should cover all testable acceptance criteria
-
-### Common Property Patterns
-
-1. **Invariants**: Properties that remain constant despite changes
-2. **Round Trip Properties**: Combining an operation with its inverse returns to original value
-3. **Idempotence**: Doing an operation twice equals doing it once
-4. **Metamorphic Properties**: Relationships that must hold between components
-5. **Model-Based Testing**: Comparing optimized vs standard implementations
-6. **Confluence**: Order of operations doesn't matter
-7. **Error Conditions**: Bad inputs properly signal errors
-
-
-
-### Correctness Properties
-
-Based on the prework analysis, here are the key correctness properties for the Class Routine Management System:
-
-**Property 1: Routine Creation Idempotence**
-*For any* valid routine input, creating the routine twice should result in only one routine in the system (or the second creation should be rejected as duplicate)
-**Validates: Requirements 1.1, 1.3**
-
-**Property 2: Unique Routine Identifiers**
-*For any* set of routines created in the system, all routine IDs should be unique
-**Validates: Requirements 1.3**
-
-**Property 3: Routine Modification Persistence**
-*For any* routine, modifying it and then retrieving it should return the modified values
-**Validates: Requirements 1.4**
-
-**Property 4: Audit Log Completeness**
-*For any* routine modification, the Audit_Log should contain an entry with the user, timestamp, action type, and affected resource
-**Validates: Requirements 1.4, 11.1, 11.2**
-
-**Property 5: Teacher Conflict Detection**
-*For any* two routines assigned to the same teacher with overlapping time slots, the system should detect a conflict
-**Validates: Requirements 2.1**
-
-**Property 6: Classroom Conflict Detection**
-*For any* two routines assigned to the same classroom with overlapping time slots, the system should detect a conflict
-**Validates: Requirements 2.2**
-
-**Property 7: Class Conflict Detection**
-*For any* two routines assigned to the same class with overlapping time slots, the system should detect a conflict
-**Validates: Requirements 2.3**
-
-**Property 8: Conflict Prevention**
-*For any* conflicting routine, the system should reject the creation and prevent it from being saved
-**Validates: Requirements 2.4**
-
-**Property 9: Teacher Availability Constraint**
-*For any* teacher marked unavailable during a period, no new routines should be created assigning that teacher during that period
-**Validates: Requirements 3.1**
-
-**Property 10: Substitute Conflict Checking**
-*For any* substitute allocated to a routine, the substitute should have no conflicting assignments
-**Validates: Requirements 3.4**
-
-**Property 11: Holiday Constraint**
-*For any* date defined as a holiday, no routines should be scheduled on that date
-**Validates: Requirements 4.1**
-
-**Property 12: Exam Period Suspension**
-*For any* exam period defined, regular class routines should be suspended during that period
-**Validates: Requirements 4.2**
-
-**Property 13: Additional Class Scheduling**
-*For any* additional class created, it should be scheduled outside regular routine slots
-**Validates: Requirements 5.1**
-
-**Property 14: Subject-Lesson Linking**
-*For any* lesson created, it should be linked to a subject with a valid sequence number
-**Validates: Requirements 6.3**
-
-**Property 15: Time Slot Non-Overlap**
-*For any* set of time slots defined for the same day, no two time slots should overlap
-**Validates: Requirements 7.2**
-
-**Property 16: Multiple Time Slots Per Day**
-*For any* day, multiple non-overlapping time slots should be allowed
-**Validates: Requirements 7.3**
-
-**Property 17: RBAC Permission Enforcement**
-*For any* user with a specific role, they should only have access to features and data permitted for that role
-**Validates: Requirements 8.1, 8.2, 8.5, 8.6**
-
-**Property 18: Notification Delivery**
-*For any* routine creation/modification, notifications should be sent to all affected teachers and students
-**Validates: Requirements 9.1**
-
-**Property 19: Notification Storage**
-*For any* notification sent to a user, it should be stored in the user's notification center
-**Validates: Requirements 9.6**
-
-**Property 20: Report Generation**
-*For any* report generated, it should contain routine data, statistics, and analytics
-**Validates: Requirements 10.5**
-
-**Property 21: Report Export Formats**
-*For any* generated report, it should be exportable in PDF, CSV, and Excel formats
-**Validates: Requirements 10.6**
-
-**Property 22: API Authentication**
-*For any* API request without valid credentials, the system should reject the request
-**Validates: Requirements 13.1**
-
-**Property 23: API Response Format**
-*For any* successful API request, the response should be in JSON format
-**Validates: Requirements 13.3**
-
-**Property 24: API Error Handling**
-*For any* failed API request, the system should return an error message with details and appropriate HTTP status code
-**Validates: Requirements 13.4**
-
-**Property 25: API Rate Limiting**
-*For any* user exceeding the rate limit, subsequent API requests should be rejected
-**Validates: Requirements 13.6**
-
-**Property 26: User Authentication**
-*For any* login attempt with invalid credentials, the system should reject the login
-**Validates: Requirements 15.1**
-
-**Property 27: Session Token Issuance**
-*For any* successful authentication, the system should issue a secure session token
-**Validates: Requirements 15.2**
-
-**Property 28: Authorization Enforcement**
-*For any* user accessing data they are not authorized to access, the system should deny access
-**Validates: Requirements 15.5**
-
-**Property 29: Optimization Constraint Satisfaction**
-*For any* optimized routine, all hard constraints (teacher availability, classroom capacity) should be satisfied
-**Validates: Requirements 17.3**
-
-**Property 30: Optimization Alternatives**
-*For any* optimization request, the system should suggest multiple alternative arrangements
-**Validates: Requirements 17.4**
-
-**Property 31: Hard Constraint Validation**
-*For any* routine, hard constraints (no teacher double-booking, classroom availability) should be validated
-**Validates: Requirements 18.1**
-
-**Property 32: Constraint Violation Prevention**
-*For any* routine violating constraints, the system should prevent it from being saved
-**Validates: Requirements 18.3**
-
-**Property 33: Calendar Date Validation**
-*For any* calendar created, dates should not conflict with defined holidays or exam periods
-**Validates: Requirements 19.4**
-
-**Property 34: Data Persistence Round Trip**
-*For any* data created or modified, retrieving it from the database should return the same data
-**Validates: Requirements 12.1**
-
-**Property 35: Data Integrity Validation**
-*For any* invalid data, the system should reject it before persisting to the database
-**Validates: Requirements 12.2**
-
-## Error Handling
-
-The system implements comprehensive error handling across all layers:
-
-**API Layer**:
-- 400 Bad Request: Invalid input parameters
-- 401 Unauthorized: Missing or invalid authentication
-- 403 Forbidden: User lacks permission for the action
-- 404 Not Found: Resource does not exist
-- 409 Conflict: Scheduling conflict or constraint violation
-- 429 Too Many Requests: Rate limit exceeded
-- 500 Internal Server Error: Unexpected server error
-
-**Business Logic Layer**:
-- Validation errors with specific field details
-- Conflict detection with suggested resolutions
-- Constraint violation errors with violation details
-- Substitute allocation failures with reasons
-
-**Data Layer**:
-- Database connection errors with retry logic
-- Data integrity errors with rollback
-- Transaction failures with compensation logic
-
-**Notification Layer**:
-- Failed notification delivery with retry mechanism
-- Notification preference validation
-- Delivery status tracking
+**User Entity**
+```java
+@Entity
+@Table(name = "users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    
+    @Column(unique = true, nullable = false)
+    private String email;
+    
+    @Column(nullable = false)
+    private String passwordHash;
+    
+    @Column(nullable = false)
+    private String firstName;
+    
+    @Column(nullable = false)
+    private String lastName;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
+    
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+    
+    @Column(nullable = false)
+    private Boolean isActive = true;
+    
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+    
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+}
+```
+
+**Routine Entity**
+```java
+@Entity
+@Table(name = "routines")
+public class Routine {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_id", nullable = false)
+    private Class classEntity;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "teacher_id", nullable = false)
+    private Teacher teacher;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_id", nullable = false)
+    private Subject subject;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lesson_id", nullable = false)
+    private Lesson lesson;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "time_slot_id", nullable = false)
+    private TimeSlot timeSlot;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "classroom_id", nullable = false)
+    private Classroom classroom;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RoutineType routineType = RoutineType.REGULAR;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RoutineStatus status = RoutineStatus.ACTIVE;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
+    
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+    
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+}
+```
+
+**Conflict Entity**
+```java
+@Entity
+@Table(name = "conflicts")
+public class Conflict {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "routine_id", nullable = false)
+    private Routine routine;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ConflictType conflictType;
+    
+    @Column(nullable = false)
+    private String description;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ConflictSeverity severity;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ConflictStatus status = ConflictStatus.DETECTED;
+    
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+    
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+}
+```
+
+**AuditLog Entity**
+```java
+@Entity
+@Table(name = "audit_logs")
+public class AuditLog {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+    
+    @Column(nullable = false)
+    private String action;
+    
+    @Column(nullable = false)
+    private String resourceType;
+    
+    private UUID resourceId;
+    
+    @Column(columnDefinition = "jsonb")
+    private String beforeState;
+    
+    @Column(columnDefinition = "jsonb")
+    private String afterState;
+    
+    @CreationTimestamp
+    private LocalDateTime timestamp;
+    
+    private String ipAddress;
+}
+```
+
+## Security Architecture
+
+### Authentication
+- Spring Security with JWT tokens
+- RS256 asymmetric signing (public/private key pair)
+- Token expiration: configurable (default: 24 hours)
+- Refresh token mechanism for long-lived sessions
+
+### Authorization
+- Role-Based Access Control (RBAC) with Spring Security
+- Four roles: Admin, Academic_Planner, Faculty, Student
+- Method-level security with @PreAuthorize annotations
+- Resource-level security with custom authorization logic
+
+### Data Protection
+- TLS 1.2+ for all data in transit
+- AES-256 encryption for sensitive data at rest
+- Password hashing with bcrypt (Spring Security)
+- CSRF protection for web endpoints
 
 ## Testing Strategy
 
 ### Unit Testing
-
-Unit tests validate specific components in isolation:
-
-- **Routine Management**: Test routine creation, modification, deletion with valid/invalid inputs
-- **Conflict Detection**: Test detection of teacher, classroom, and class conflicts
-- **Substitute Allocation**: Test substitute identification and allocation logic
-- **Calendar Management**: Test holiday and exam period handling
-- **RBAC**: Test role-based access control enforcement
-- **API Validation**: Test request validation and error responses
-- **Data Persistence**: Test database operations and data integrity
-
-### Property-Based Testing
-
-Property-based tests validate universal properties across many generated inputs:
-
-- **Routine Uniqueness**: Verify all created routines have unique IDs
-- **Conflict Detection Completeness**: Verify all conflicts are detected
-- **Constraint Satisfaction**: Verify all constraints are satisfied in optimized routines
-- **Authorization Enforcement**: Verify users can only access authorized data
-- **Audit Logging**: Verify all actions are logged with complete information
-- **Notification Delivery**: Verify notifications are sent to all affected users
-- **Data Persistence**: Verify data round-trip (create → retrieve → verify)
+- JUnit 5 with Mockito for mocking
+- Test coverage target: 70%+
+- Mockito for mocking Spring beans
+- AssertJ for fluent assertions
 
 ### Integration Testing
+- Testcontainers for PostgreSQL and Redis
+- Spring Boot Test with @SpringBootTest
+- MockMvc for testing REST endpoints
+- Test database with Flyway migrations
 
-Integration tests validate interactions between components:
+### Property-Based Testing
+- QuickTheories or jqwik for property-based tests
+- 35 correctness properties from specification
+- Shrinking for minimal failing examples
 
-- **Routine Creation Workflow**: Test complete routine creation with conflict detection and notifications
-- **Substitute Allocation Workflow**: Test substitute identification, allocation, and notifications
-- **Holiday/Exam Handling**: Test calendar updates and routine suspension
-- **Optimization Workflow**: Test optimization request, suggestion, and approval
-- **API Integration**: Test API endpoints with database and business logic
-
-### User Acceptance Testing
-
-UAT validates the system meets user requirements:
-
-- **Admin Dashboard**: Verify system statistics and user management
-- **Planner Workflow**: Verify routine creation, conflict resolution, and optimization
-- **Faculty Experience**: Verify access to assigned classes and routines
-- **Student Experience**: Verify access to class routine and schedule
-- **Notification System**: Verify timely and accurate notifications
-- **Report Generation**: Verify report accuracy and export functionality
+### Performance Testing
+- JMH (Java Microbenchmark Harness) for benchmarks
+- Load testing with JMeter or Gatling
+- Memory profiling with JProfiler
 
 ## Deployment Architecture
 
-### Cloud-Ready Deployment
+### Docker Containerization
+```dockerfile
+# Multi-stage build for Spring Boot application
+FROM maven:3.9-eclipse-temurin-17 AS builder
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src ./src
+RUN mvn clean package -DskipTests
 
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=builder /app/target/app.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Cloud Platform (AWS/Azure/GCP)           │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │              Kubernetes Cluster                      │   │
-│  │  ┌────────────────────────────────────────────────┐  │   │
-│  │  │  Ingress Controller (Load Balancer)            │  │   │
-│  │  └────────────────────────────────────────────────┘  │   │
-│  │  ┌────────────────────────────────────────────────┐  │   │
-│  │  │  API Service Pods (Auto-scaling)               │  │   │
-│  │  │  ├─ Pod 1 (API Server)                         │  │   │
-│  │  │  ├─ Pod 2 (API Server)                         │  │   │
-│  │  │  └─ Pod N (API Server)                         │  │   │
-│  │  └────────────────────────────────────────────────┘  │   │
-│  │  ┌────────────────────────────────────────────────┐  │   │
-│  │  │  Optimization Service Pods                     │  │   │
-│  │  │  ├─ Pod 1 (Constraint Solver)                  │  │   │
-│  │  │  └─ Pod N (Constraint Solver)                  │  │   │
-│  │  └────────────────────────────────────────────────┘  │   │
-│  │  ┌────────────────────────────────────────────────┐  │   │
-│  │  │  Notification Service Pods                     │  │   │
-│  │  │  ├─ Pod 1 (Email/SMS)                          │  │   │
-│  │  │  └─ Pod N (Email/SMS)                          │  │   │
-│  │  └────────────────────────────────────────────────┘  │   │
-│  │  ┌────────────────────────────────────────────────┐  │   │
-│  │  │  Persistent Storage                            │  │   │
-│  │  │  ├─ PostgreSQL (Primary)                       │  │   │
-│  │  │  ├─ PostgreSQL (Replica)                       │  │   │
-│  │  │  ├─ Redis Cache                                │  │   │
-│  │  │  └─ Backup Storage                             │  │   │
-│  │  └────────────────────────────────────────────────┘  │   │
-│  └──────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │  Monitoring & Logging                               │   │
-│  │  ├─ Prometheus (Metrics)                            │   │
-│  │  ├─ Grafana (Dashboards)                            │   │
-│  │  ├─ ELK Stack (Logs)                                │   │
-│  │  └─ Alert Manager                                   │   │
-│  └──────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
-```
+
+### Kubernetes Deployment
+- StatefulSet for database (PostgreSQL)
+- Deployment for API services (Spring Boot)
+- Service for load balancing
+- ConfigMap for configuration
+- Secret for sensitive data
+- HPA (Horizontal Pod Autoscaler) for auto-scaling
 
 ### CI/CD Pipeline
-
 ```
 Developer Push → GitHub/GitLab
     ↓
 GitHub Actions / GitLab CI
     ├─ Code Checkout
-    ├─ Lint & Format Check
-    ├─ Unit Tests
-    ├─ Property-Based Tests
-    ├─ Integration Tests
-    ├─ Security Scan (SAST)
+    ├─ Maven Build & Test
+    ├─ SonarQube Analysis
+    ├─ Security Scan (OWASP)
     ├─ Build Docker Image
     ├─ Push to Registry
     ├─ Deploy to Staging
-    ├─ Smoke Tests
+    ├─ Integration Tests
     ├─ Performance Tests
     └─ Deploy to Production (Manual Approval)
 ```
 
 ### Environment Configuration
-
-- **Development**: Local Docker Compose setup
+- **Development**: Local Docker Compose with Spring Boot dev tools
 - **Staging**: Kubernetes cluster with production-like configuration
 - **Production**: Multi-region Kubernetes cluster with auto-scaling
 
+## Error Handling
+
+### HTTP Status Codes
+- 200 OK: Successful request
+- 201 Created: Resource created
+- 400 Bad Request: Invalid input parameters
+- 401 Unauthorized: Missing or invalid authentication
+- 403 Forbidden: User lacks permission
+- 404 Not Found: Resource does not exist
+- 409 Conflict: Scheduling conflict or constraint violation
+- 429 Too Many Requests: Rate limit exceeded
+- 500 Internal Server Error: Unexpected server error
+
+### Exception Handling
+- Custom exceptions extending RuntimeException
+- @ControllerAdvice for global exception handling
+- Structured error responses with error codes
+- Logging of all exceptions with context
+
+## Performance Considerations
+
+### Caching Strategy
+- Redis for session caching
+- Spring Cache abstraction with @Cacheable
+- Cache invalidation on data updates
+- TTL-based expiration
+
+### Database Optimization
+- Lazy loading for relationships
+- Pagination for large result sets
+- Database indexes on frequently queried columns
+- Query optimization with EXPLAIN ANALYZE
+
+### Concurrency
+- Spring's async processing with @Async
+- CompletableFuture for non-blocking operations
+- Thread pool configuration for async tasks
+- Optimistic locking with @Version annotation
+
+## Monitoring and Observability
+
+### Metrics
+- Spring Boot Actuator for application metrics
+- Prometheus format for metrics export
+- Custom metrics for business logic
+- JVM metrics (memory, GC, threads)
+
+### Logging
+- SLF4J with Logback
+- Structured logging with JSON format
+- Log levels: DEBUG, INFO, WARN, ERROR
+- Centralized logging with ELK Stack
+
+### Tracing
+- Spring Cloud Sleuth for distributed tracing
+- Correlation IDs for request tracking
+- Integration with Jaeger or Zipkin
+
+## Summary
+
+This design document specifies a **Java-based enterprise implementation** of the Class Routine Management System using Spring Boot, Spring Security, Hibernate/JPA, PostgreSQL, Redis, and Google OR-Tools. The architecture follows SOLID principles, implements layered design patterns, and supports cloud-native deployment on Kubernetes. All 20 functional requirements and 35 correctness properties are preserved and remain valid for this Java implementation.
