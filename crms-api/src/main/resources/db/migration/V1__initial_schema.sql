@@ -190,8 +190,8 @@ CREATE TABLE audit_logs (
     action VARCHAR(255) NOT NULL,
     resource_type VARCHAR(100) NOT NULL,
     resource_id UUID,
-    before_state JSONB,
-    after_state JSONB,
+    before_state TEXT,
+    after_state TEXT,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ip_address VARCHAR(45)
 );

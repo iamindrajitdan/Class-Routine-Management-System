@@ -2,6 +2,9 @@ package com.crms.controller;
 
 import com.crms.dto.LoginRequest;
 import com.crms.dto.LoginResponse;
+import com.crms.dto.UserDTO;
+import com.crms.domain.User;
+import com.crms.repository.UserRepository;
 import com.crms.security.JwtTokenProvider;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,9 @@ public class AuthController {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -40,7 +46,11 @@ public class AuthController {
         String accessToken = tokenProvider.generateToken(authentication);
         String refreshToken = tokenProvider.generateRefreshToken(authentication.getName());
 
-        return ResponseEntity.ok(new LoginResponse(accessToken, refreshToken, "Bearer"));
+        // Fetch user details
+        User user = userRepository.findByEmail(loginRequest.getEmail()).orElse(null);
+        UserDTO userDTO = user != null ? new UserDTO(user) : null;
+
+        return ResponseEntity.ok(new LoginResponse(accessToken, refreshToken, "Bearer", userDTO));
     }
 
     @PostMapping("/refresh")

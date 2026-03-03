@@ -1,4 +1,4 @@
-# Class Routine Management System
+# Class Routine Management System (CRMS)
 
 A university-grade, cloud-ready platform for managing academic schedules with AI-assisted timetable optimization, conflict detection, and comprehensive reporting.
 
@@ -6,7 +6,7 @@ A university-grade, cloud-ready platform for managing academic schedules with AI
 
 This is a full-stack SaaS application designed for academic institutions to manage class routines, teacher schedules, classroom allocations, and student timetables with intelligent constraint solving and optimization.
 
-**Status**: ✅ **Phase 1-7 & 15-16 Complete** | Ready for Testing & Frontend Development
+**Status**: ✅ **Phase 1-7 & 15-16 Complete** | Backend API + React Dashboard Ready
 
 ## Architecture
 
@@ -55,8 +55,9 @@ This is a full-stack SaaS application designed for academic institutions to mana
 - Java 17 or higher
 - Maven 3.8+
 - Docker & Docker Compose
+- Node.js 18+ (for local frontend development)
 
-### Option 1: Build Locally + Docker (Recommended)
+### Option 1: Docker (Recommended - Everything in One Command)
 
 ```bash
 # Clone repository
@@ -66,58 +67,60 @@ cd Class-Routine-Management-System
 # Build the project
 mvn clean package -DskipTests
 
-# Start all services
+# Start all services (API + Frontend + Database + Cache)
 docker-compose up -d
 
 # Verify services
 docker-compose ps
 
-# Test API
-curl http://localhost:8080/actuator/health
+# Access the application
+# Frontend Dashboard: http://localhost:3000
+# API: http://localhost:8080
+# Swagger UI: http://localhost:8080/swagger-ui.html
 ```
 
-### Option 2: Docker Only
+### Option 2: Local Development (Backend + Docker Infrastructure)
 
 ```bash
 # Clone repository
 git clone https://github.com/iamindrajitdan/Class-Routine-Management-System.git
 cd Class-Routine-Management-System
 
-# Build and start all services
-docker-compose up -d --build
-
-# Verify services
-docker-compose ps
-```
-
-### Option 3: Local Development
-
-```bash
-# Clone repository
-git clone https://github.com/iamindrajitdan/Class-Routine-Management-System.git
-cd Class-Routine-Management-System
-
-# Start infrastructure
+# Start infrastructure (PostgreSQL, Redis)
 docker-compose up -d postgres redis
 
-# Build the project
+# Build and run backend
 mvn clean install
-
-# Run the application
 cd crms-api
 mvn spring-boot:run
+
+# In another terminal, start frontend
+cd frontend
+npm install
+npm run dev
+
+# Access the application
+# Frontend: http://localhost:3000
+# API: http://localhost:8080
 ```
 
-## Access the Application
+### Option 3: Build Locally + Docker
 
-- **API Base URL**: http://localhost:8080
-- **Swagger UI**: http://localhost:8080/swagger-ui.html
-- **Health Check**: http://localhost:8080/actuator/health
-- **Metrics**: http://localhost:8080/actuator/metrics
+```bash
+# Build the project
+mvn clean package -DskipTests
+
+# Start services
+docker-compose up -d
+
+# Access the application
+# Frontend: http://localhost:3000
+# API: http://localhost:8080
+```
 
 ## Default Credentials
 
-For local development:
+For local development, use these credentials:
 
 | Email | Password | Role |
 |-------|----------|------|
@@ -128,12 +131,58 @@ For local development:
 
 ⚠️ **Change these in production!**
 
+## Access the Application
+
+Once services are running:
+
+- **Frontend Dashboard**: http://localhost:3000
+- **API Base URL**: http://localhost:8080
+- **Swagger UI**: http://localhost:8080/swagger-ui.html
+- **Health Check**: http://localhost:8080/actuator/health
+- **Metrics**: http://localhost:8080/actuator/metrics
+
+## Frontend Features
+
+### Dashboard
+- Welcome message with user name
+- Statistics cards (Routines, Conflicts, Teachers, Classes)
+- Quick action buttons
+- Recent activity feed
+
+### Routines Management
+- View all routines in a table
+- Create new routine
+- Edit routine
+- Delete routine
+
+### Conflict Detection
+- View all conflicts
+- Detect new conflicts
+- Resolve conflicts
+- Filter by severity
+
+### Substitute Allocation
+- View substitute allocations
+- Allocate new substitute
+- Edit substitute
+- Remove substitute
+
+### Navigation
+- Sticky navbar with logo
+- Navigation links
+- User profile
+- Logout button
+
 ## Project Structure
 
 ```
 .
+├── README.md                        # Main documentation
 ├── pom.xml                          # Parent POM
-├── crms-api/                        # Main API module
+├── docker-compose.yml               # Local development
+├── .env.example                     # Environment template
+│
+├── crms-api/                        # Backend API (Java/Spring Boot)
 │   ├── pom.xml
 │   ├── Dockerfile                   # Multi-stage build
 │   ├── Dockerfile.simple            # Simplified build
@@ -152,12 +201,37 @@ For local development:
 │       │       ├── application.yml
 │       │       └── db/migration/     # Flyway migrations
 │       └── test/                     # Unit & integration tests
+│
+├── frontend/                        # React Dashboard
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── Dockerfile
+│   ├── index.html
+│   └── src/
+│       ├── main.jsx
+│       ├── App.jsx
+│       ├── pages/
+│       │   ├── Login.jsx
+│       │   ├── Dashboard.jsx
+│       │   ├── Routines.jsx
+│       │   ├── Conflicts.jsx
+│       │   └── Substitutes.jsx
+│       ├── components/
+│       │   ├── Navbar.jsx
+│       │   └── StatCard.jsx
+│       └── styles/
+│           ├── Login.css
+│           ├── Dashboard.css
+│           ├── Routines.css
+│           ├── Conflicts.css
+│           └── Substitutes.css
+│
 ├── k8s/                             # Kubernetes manifests
 │   ├── deployment.yaml
 │   ├── service.yaml
 │   ├── configmap.yaml
 │   └── secrets.yaml
-├── docker-compose.yml               # Local development
+│
 └── .kiro/specs/                     # Specification documents
     └── class-routine-management/
         ├── requirements.md
@@ -170,8 +244,6 @@ For local development:
 - [Requirements](.kiro/specs/class-routine-management/requirements.md) - 20 functional requirements
 - [Design](.kiro/specs/class-routine-management/design.md) - System architecture and design
 - [Tasks](.kiro/specs/class-routine-management/tasks.md) - 100+ implementation tasks
-- [QUICKSTART.md](QUICKSTART.md) - 5-minute quick start
-- [IMPLEMENTATION.md](IMPLEMENTATION.md) - Implementation details
 
 ## Features
 

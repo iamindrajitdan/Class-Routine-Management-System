@@ -21,7 +21,7 @@ spring:
   # JPA/Hibernate Configuration
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     show-sql: ${SHOW_SQL:false}
     properties:
       hibernate:
@@ -32,6 +32,8 @@ spring:
           batch_size: 20
         order_inserts: true
         order_updates: true
+        hbm2ddl:
+          auto: none
   
   # Flyway Configuration (Requirement 12.1)
   flyway:
@@ -96,6 +98,9 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+  health:
+    mail:
+      enabled: false
   metrics:
     export:
       prometheus:

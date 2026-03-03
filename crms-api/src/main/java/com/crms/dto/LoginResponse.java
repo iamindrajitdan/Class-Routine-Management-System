@@ -9,6 +9,7 @@ public class LoginResponse {
     private String accessToken;
     private String refreshToken;
     private String tokenType;
+    private UserDTO user;
 
     public LoginResponse() {
     }
@@ -17,6 +18,13 @@ public class LoginResponse {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.tokenType = tokenType;
+    }
+
+    public LoginResponse(String accessToken, String refreshToken, String tokenType, UserDTO user) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.tokenType = tokenType;
+        this.user = user;
     }
 
     public String getAccessToken() {
@@ -41,5 +49,13 @@ public class LoginResponse {
 
     public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
+    }
+
+    public UserDTO getUser() {
+        return user;
+    }
+
+    public void setUser(UserDTO user) {
+        this.user = user;
     }
 }
