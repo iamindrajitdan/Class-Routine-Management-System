@@ -27,7 +27,7 @@ function Substitutes() {
   }
 
   return (
-    <div className="substitutes-container">
+    <div className="substitutes-container fade-in">
       <div className="page-header">
         <h1>Substitutes</h1>
         <button className="btn-primary">Allocate Substitute</button>
@@ -37,7 +37,15 @@ function Substitutes() {
 
       <div className="card">
         {loading ? (
-          <p>Loading substitutes...</p>
+          <table className="substitutes-table">
+            <tbody>
+              {Array(5).fill(0).map((_,i)=>(
+                <tr key={i} className="skeleton-row">
+                  <td colSpan="6" className="skeleton-cell"></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : substitutes.length === 0 ? (
           <p className="text-muted">No substitutes found</p>
         ) : (

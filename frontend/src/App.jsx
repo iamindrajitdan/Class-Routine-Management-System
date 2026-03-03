@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Routines from './pages/Routines'
@@ -15,7 +15,6 @@ function App() {
   const [darkMode, setDarkMode] = useState(false)
 
   useEffect(() => {
-    // Check if user is already logged in
     const token = localStorage.getItem('token')
     const userData = localStorage.getItem('user')
     const savedTheme = localStorage.getItem('theme')
@@ -61,6 +60,21 @@ function App() {
   return (
     <Router>
       {isAuthenticated && <Navbar user={user} onLogout={handleLogout} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />}
+      <MainContent
+        isAuthenticated={isAuthenticated}
+        handleLogin={handleLogin}
+        user={user}
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
+      />
+    </Router>
+  )
+}
+
+function MainContent({ isAuthenticated, handleLogin, user, darkMode, toggleDarkMode }) {
+  const location = useLocation()
+  return (
+    <div key={location.pathname} className="page-content fade-in">
       <Routes>
         <Route 
           path="/login" 
@@ -83,7 +97,7 @@ function App() {
           element={isAuthenticated ? <Substitutes /> : <Navigate to="/login" />} 
         />
       </Routes>
-    </Router>
+    </div>
   )
 }
 

@@ -27,7 +27,7 @@ function Conflicts() {
   }
 
   return (
-    <div className="conflicts-container">
+    <div className="conflicts-container fade-in">
       <div className="page-header">
         <h1>Conflicts</h1>
         <button className="btn-primary">Detect Conflicts</button>
@@ -37,7 +37,13 @@ function Conflicts() {
 
       <div className="card">
         {loading ? (
-          <p>Loading conflicts...</p>
+          <tbody>
+            {Array(5).fill(0).map((_,i)=>(
+              <tr key={i} className="skeleton-row">
+                <td colSpan="6"></td>
+              </tr>
+            ))}
+          </tbody>
         ) : conflicts.length === 0 ? (
           <p className="text-muted">No conflicts found</p>
         ) : (

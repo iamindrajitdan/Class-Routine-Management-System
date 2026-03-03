@@ -30,7 +30,7 @@ function Login({ onLogin, darkMode, toggleDarkMode }) {
 
   return (
     <div className="login-container">
-      <button className="theme-toggle" onClick={toggleDarkMode}>
+      <button className={`theme-toggle ${darkMode ? 'rotated' : ''}`} onClick={toggleDarkMode}>
         {darkMode ? (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="5"></circle>
@@ -52,17 +52,14 @@ function Login({ onLogin, darkMode, toggleDarkMode }) {
 
       <div className="login-card">
         <div className="login-header">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-          </svg>
+          <div className="login-hero">🎓</div>
           <h1>CRMS</h1>
           <p>Class Routine Management System</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Email</label>
+            <label>📧 Email</label>
             <input
               type="email"
               value={email}
@@ -73,7 +70,7 @@ function Login({ onLogin, darkMode, toggleDarkMode }) {
           </div>
 
           <div className="form-group">
-            <label>Password</label>
+            <label>🔐 Password</label>
             <input
               type="password"
               value={password}
@@ -83,34 +80,38 @@ function Login({ onLogin, darkMode, toggleDarkMode }) {
             />
           </div>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && <div className="error-message">❌ {error}</div>}
 
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? '⏳ Signing in...' : '✨ Sign in'}
           </button>
         </form>
 
         <div className="demo-credentials">
-          <p className="demo-title">Demo Credentials</p>
+          <p className="demo-title">👤 Demo Credentials</p>
           <div className="demo-list">
             <div className="demo-item">
+              <span className="demo-icon">👑</span>
               <span className="demo-role">Admin</span>
               <span className="demo-email">admin@crms.edu</span>
             </div>
             <div className="demo-item">
+              <span className="demo-icon">📋</span>
               <span className="demo-role">Planner</span>
               <span className="demo-email">planner@crms.edu</span>
             </div>
             <div className="demo-item">
+              <span className="demo-icon">👨‍🏫</span>
               <span className="demo-role">Faculty</span>
               <span className="demo-email">faculty@crms.edu</span>
             </div>
             <div className="demo-item">
+              <span className="demo-icon">👨‍🎓</span>
               <span className="demo-role">Student</span>
               <span className="demo-email">student@crms.edu</span>
             </div>
           </div>
-          <p className="demo-password">Password: password123</p>
+          <p className="demo-password">🔑 Password: <code>password123</code></p>
         </div>
       </div>
     </div>

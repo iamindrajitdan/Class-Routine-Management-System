@@ -52,6 +52,10 @@ public class RoutineService {
         return routineRepository.findByStatus(status);
     }
 
+    public List<Routine> getAllRoutines() {
+        return routineRepository.findAll();
+    }
+
     @CacheEvict(value = {"routines", "routines_by_class", "routines_by_teacher", "routines_by_status"}, allEntries = true)
     public Routine createRoutine(Routine routine) {
         // Validate routine data

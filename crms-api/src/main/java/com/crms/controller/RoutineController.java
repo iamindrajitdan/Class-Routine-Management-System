@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,6 +31,17 @@ public class RoutineController {
 
     @Autowired
     private AuditLogService auditLogService;
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'ACADEMIC_PLANNER', 'FACULTY', 'STUDENT')")
+    public ResponseEntity<?> getAllRoutines() {
+        try {
+            List<Routine> routines = routineService.getAllRoutines();
+            return ResponseEntity.ok(routines);
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ArrayList<>());
+        }
+    }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'ACADEMIC_PLANNER', 'FACULTY')")

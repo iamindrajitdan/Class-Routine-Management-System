@@ -1,26 +1,56 @@
 .substitutes-container {
-  padding: 30px 20px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
+  padding: 32px 24px;
+  animation: fadeIn 0.4s ease;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  color: white;
+  margin-bottom: 32px;
+  color: var(--text-primary);
 }
 
 .page-header h1 {
   font-size: 28px;
+  font-weight: 400;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
 }
 
 .card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 0;
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-sm);
 }
 
 .substitutes-table {
@@ -29,59 +59,132 @@
 }
 
 .substitutes-table thead {
-  background: #f3f4f6;
+  background: var(--bg-secondary);
 }
 
 .substitutes-table th {
-  padding: 12px;
+  padding: 16px;
   text-align: left;
-  font-weight: 600;
-  color: #1f2937;
-  border-bottom: 2px solid #e5e7eb;
+  font-weight: 500;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .substitutes-table td {
-  padding: 12px;
-  border-bottom: 1px solid #e5e7eb;
-  color: #6b7280;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
-.substitutes-table tr:hover {
-  background: #f9fafb;
+.substitutes-table tbody tr:hover {
+  background: var(--bg-secondary);
+}
+
+.substitutes-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .btn-small {
   padding: 6px 12px;
-  margin-right: 5px;
+  margin-right: 8px;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 12px;
   cursor: pointer;
-  background: #667eea;
+  background: var(--primary-color);
   color: white;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-small:hover {
-  background: #5568d3;
+  background: var(--primary-hover);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
 }
 
 .btn-small.btn-danger {
-  background: #ef4444;
+  background: transparent;
+  color: var(--error-color);
+  border: 1px solid var(--error-color);
+  margin-right: 0;
 }
 
 .btn-small.btn-danger:hover {
-  background: #dc2626;
+  background: rgba(217, 48, 37, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .text-muted {
-  color: #6b7280;
+  color: var(--text-secondary);
+  padding: 40px 20px;
+  text-align: center;
 }
 
 .error-banner {
-  background: #fee2e2;
-  color: #dc2626;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
+  background: rgba(217, 48, 37, 0.1);
+  color: var(--error-color);
+  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--error-color);
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.skeleton-row td {
+  height: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-row td::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: shine 1.5s infinite linear;
+}
+
+@keyframes shine {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: calc(200% + 200px) 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .substitutes-container {
+    padding: 24px 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .substitutes-table {
+    font-size: 12px;
+  }
+
+  .substitutes-table th,
+  .substitutes-table td {
+    padding: 12px;
+  }
+
+  .btn-small {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
 }

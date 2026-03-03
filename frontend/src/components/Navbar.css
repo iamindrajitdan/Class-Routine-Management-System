@@ -5,16 +5,18 @@
   top: 0;
   z-index: 100;
   transition: all 0.3s ease;
+  box-shadow: var(--shadow-xs);
 }
 
 .navbar-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
+  height: 68px;
+  gap: 24px;
 }
 
 .navbar-brand {
@@ -23,17 +25,51 @@
   gap: 12px;
   text-decoration: none;
   color: var(--text-primary);
-  font-size: 22px;
-  font-weight: 500;
-  transition: opacity 0.2s ease;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #1a73e8 0%, #34a853 100%);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+  transition: all 0.3s ease;
+  animation: brandBounce 2.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.brand-icon:hover {
+  transform: scale(1.15) rotateZ(5deg);
+  box-shadow: 0 6px 16px rgba(26, 115, 232, 0.4);
+}
+
+@keyframes brandBounce {
+  0%, 100% {
+    transform: translateY(0) rotateZ(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotateZ(-2deg);
+  }
 }
 
 .navbar-brand:hover {
-  opacity: 0.8;
+  opacity: 0.95;
+  transform: scale(1.05) translateY(-2px);
 }
 
 .navbar-brand svg {
   color: var(--primary-color);
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
 }
 
 .navbar-menu {
@@ -56,6 +92,20 @@
   font-weight: 500;
   transition: all 0.2s ease;
   position: relative;
+  white-space: nowrap;
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.nav-link:hover .nav-icon {
+  transform: scale(1.2) rotate(5deg);
 }
 
 .nav-link:hover {
@@ -65,67 +115,130 @@
 
 .nav-link.active {
   color: var(--primary-color);
-  background-color: rgba(26, 115, 232, 0.1);
+  background-color: var(--primary-light);
 }
 
-[data-theme='dark'] .nav-link.active {
-  background-color: rgba(138, 180, 248, 0.1);
+.nav-link.active .nav-icon {
+  animation: iconFloat 1.5s ease-in-out infinite;
 }
 
-.nav-link svg {
-  flex-shrink: 0;
+@keyframes iconFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.nav-link span {
+  display: inline;
 }
 
 .navbar-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  margin-left: auto;
 }
 
-.icon-btn {
+.theme-toggle-btn {
+  position: relative;
+  width: 60px;
+  height: 30px;
+  border: 2px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  gap: 4px;
+}
+
+.theme-toggle-btn:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px rgba(66, 133, 244, 0.2);
+}
+
+.toggle-icon {
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: transparent;
-  border-radius: 50%;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s ease;
+  width: 20px;
+  height: 20px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
-.icon-btn:hover {
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
+.toggle-icon.light-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.toggle-icon.dark-icon {
+  opacity: 0.4;
+  transform: scale(0.8);
+}
+
+.theme-toggle-btn.active .toggle-icon.light-icon {
+  opacity: 0.4;
+  transform: scale(0.8);
+}
+
+.theme-toggle-btn.active .toggle-icon.dark-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.toggle-slider {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  left: 3px;
+  top: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.theme-toggle-btn.active .toggle-slider {
+  left: 34px;
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
 }
 
 .user-menu {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 6px 12px 6px 6px;
+  gap: 10px;
+  padding: 8px 14px 8px 8px;
   border-radius: var(--radius-xl);
   background-color: var(--bg-secondary);
   transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
 }
 
 .user-menu:hover {
   box-shadow: var(--shadow-sm);
+  background-color: var(--bg-tertiary);
 }
 
 .user-avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
+  flex-shrink: 0;
 }
 
 .user-info {
@@ -135,10 +248,10 @@
 }
 
 .user-name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-primary);
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
 .user-role {
@@ -157,7 +270,7 @@
   background-color: transparent;
   color: var(--text-primary);
   border-radius: var(--radius-lg);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -166,14 +279,61 @@
 .btn-logout:hover {
   background-color: var(--bg-secondary);
   border-color: var(--text-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-logout:active {
+  transform: scale(0.97);
+}
+
+/* Mobile responsive */
+@media (max-width: 1024px) {
+  .navbar-menu {
+    margin-left: 24px;
+  }
+
+  .nav-link span {
+    display: none;
+  }
+
+  .nav-link {
+    padding: 8px;
+  }
 }
 
 @media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 16px;
+    height: 60px;
+  }
+
   .navbar-menu {
     display: none;
   }
-  
+
   .user-info {
     display: none;
+  }
+
+  .navbar-brand span {
+    display: none;
+  }
+
+  .navbar-brand {
+    font-size: 16px;
+  }
+
+  .theme-toggle-btn {
+    width: 52px;
+    height: 26px;
+  }
+
+  .toggle-slider {
+    width: 18px;
+    height: 18px;
+  }
+
+  .theme-toggle-btn.active .toggle-slider {
+    left: 30px;
   }
 }
