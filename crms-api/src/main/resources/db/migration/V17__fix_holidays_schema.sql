@@ -1,0 +1,14 @@
+ALTER TABLE holidays DROP CONSTRAINT IF EXISTS valid_holiday_range;
+
+ALTER TABLE holidays 
+    ADD COLUMN IF NOT EXISTS holiday_date DATE,
+    ADD COLUMN IF NOT EXISTS description VARCHAR(500),
+    ADD COLUMN IF NOT EXISTS type VARCHAR(50) DEFAULT 'REGULAR';
+
+UPDATE holidays SET holiday_date = CURRENT_DATE WHERE holiday_date IS NULL;
+    
+ALTER TABLE holidays 
+    ALTER COLUMN holiday_date SET NOT NULL,
+    DROP COLUMN IF EXISTS start_date CASCADE,
+    DROP COLUMN IF EXISTS end_date CASCADE,
+    DROP COLUMN IF EXISTS academic_year CASCADE;

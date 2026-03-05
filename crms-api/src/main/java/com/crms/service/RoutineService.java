@@ -61,13 +61,13 @@ public class RoutineService {
         // Validate routine data
         validateRoutine(routine);
 
-        // Detect conflicts
-        List<Conflict> conflicts = conflictDetectionService.detectConflicts(routine);
-        if (!conflicts.isEmpty()) {
-            throw new RuntimeException("Scheduling conflicts detected. Please resolve before saving.");
-        }
+        // Save the routine first
+        Routine savedRoutine = routineRepository.save(routine);
 
-        return routineRepository.save(routine);
+        // Detect and record conflicts (non-blocking - conflicts are warnings)
+        conflictDetectionService.detectConflicts(savedRoutine);
+
+        return savedRoutine;
     }
 
     @CacheEvict(value = {"routines", "routines_by_class", "routines_by_teacher", "routines_by_status"}, allEntries = true)
@@ -77,12 +77,6 @@ public class RoutineService {
         // Validate updated routine
         validateRoutine(updatedRoutine);
 
-        // Detect conflicts
-        List<Conflict> conflicts = conflictDetectionService.detectConflicts(updatedRoutine);
-        if (!conflicts.isEmpty()) {
-            throw new RuntimeException("Scheduling conflicts detected. Please resolve before saving.");
-        }
-
         routine.setTeacher(updatedRoutine.getTeacher());
         routine.setSubject(updatedRoutine.getSubject());
         routine.setLesson(updatedRoutine.getLesson());
@@ -90,7 +84,12 @@ public class RoutineService {
         routine.setClassroom(updatedRoutine.getClassroom());
         routine.setStatus(updatedRoutine.getStatus());
 
-        return routineRepository.save(routine);
+        Routine saved = routineRepository.save(routine);
+
+        // Detect and record conflicts after update (non-blocking)
+        conflictDetectionService.detectConflicts(saved);
+
+        return saved;
     }
 
     @CacheEvict(value = {"routines", "routines_by_class", "routines_by_teacher", "routines_by_status"}, allEntries = true)

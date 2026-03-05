@@ -22,10 +22,7 @@ public class CalendarController {
 
     @GetMapping("/holidays")
     public ResponseEntity<List<Holiday>> getAllHolidays() {
-        // Assuming holidayRepository.findAll() is available or add to service
-        // For simplicity, let's just return a list from service if implemented
-        // I'll add a findAll method to service or repo if needed
-        return ResponseEntity.ok(calendarService.getHolidaysByDate(null)); // Placeholder logic
+        return ResponseEntity.ok(calendarService.getAllHolidays());
     }
 
     @PostMapping("/holidays")
@@ -43,7 +40,7 @@ public class CalendarController {
 
     @GetMapping("/exam-periods")
     public ResponseEntity<List<ExamPeriod>> getAllExamPeriods() {
-        return ResponseEntity.ok(calendarService.getExamPeriodsByDate(null)); // Placeholder logic
+        return ResponseEntity.ok(calendarService.getAllExamPeriods());
     }
 
     @PostMapping("/exam-periods")

@@ -107,14 +107,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, WebRequest request) {
-        System.err.println("GENERIC EXCEPTION: " + ex.getMessage());
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<ErrorResponse> handleGenericException(Throwable ex, WebRequest request) {
+        System.err.println("GENERIC ERROR: " + ex.getMessage());
         ex.printStackTrace();
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 ex.getMessage(),
-                null, // Added null for 'details' to match existing constructor
+                null,
                 request.getDescription(false)
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);

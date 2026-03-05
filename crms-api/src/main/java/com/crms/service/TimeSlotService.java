@@ -24,7 +24,7 @@ public class TimeSlotService {
     @Autowired
     private TimeSlotRepository timeSlotRepository;
 
-    @Cacheable(value = "time_slots")
+    @Cacheable(value = "time_slots_all")
     public List<TimeSlot> findAll() {
         return timeSlotRepository.findAll();
     }
@@ -40,14 +40,14 @@ public class TimeSlotService {
         return timeSlotRepository.findByDayOfWeek(dayOfWeek);
     }
 
-    @CacheEvict(value = {"time_slots", "time_slots_by_day"}, allEntries = true)
+    @CacheEvict(value = {"time_slots_all", "time_slots", "time_slots_by_day"}, allEntries = true)
     public TimeSlot createTimeSlot(TimeSlot timeSlot) {
         validateTimeSlot(timeSlot);
         checkForOverlap(timeSlot);
         return timeSlotRepository.save(timeSlot);
     }
 
-    @CacheEvict(value = {"time_slots", "time_slots_by_day"}, allEntries = true)
+    @CacheEvict(value = {"time_slots_all", "time_slots", "time_slots_by_day"}, allEntries = true)
     public TimeSlot updateTimeSlot(UUID id, TimeSlot updatedTimeSlot) {
         TimeSlot timeSlot = getTimeSlotById(id);
         validateTimeSlot(updatedTimeSlot);
@@ -71,7 +71,7 @@ public class TimeSlotService {
         return timeSlotRepository.save(timeSlot);
     }
 
-    @CacheEvict(value = {"time_slots", "time_slots_by_day"}, allEntries = true)
+    @CacheEvict(value = {"time_slots_all", "time_slots", "time_slots_by_day"}, allEntries = true)
     public void deleteTimeSlot(UUID id) {
         TimeSlot timeSlot = getTimeSlotById(id);
 

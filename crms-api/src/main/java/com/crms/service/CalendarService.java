@@ -54,6 +54,14 @@ public class CalendarService {
                 .orElseThrow(() -> new RuntimeException("Exam period not found with id: " + id));
     }
 
+    public List<Holiday> getAllHolidays() {
+        return holidayRepository.findAll();
+    }
+
+    public List<ExamPeriod> getAllExamPeriods() {
+        return examPeriodRepository.findAll();
+    }
+
     @Cacheable(value = "holidays_by_date", key = "#date")
     public List<Holiday> getHolidaysByDate(LocalDate date) {
         if (date == null) return holidayRepository.findAll();
