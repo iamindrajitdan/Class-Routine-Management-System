@@ -11,12 +11,15 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Class Entity (e.g., CS-2024-A, BBA-2023-B)
  * Represents a group of students enrolled in a specific program/semester
  * Requirements: 1.1, 6.1
  */
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "classes", indexes = {
         @Index(name = "idx_class_code", columnList = "code"),
         @Index(name = "idx_class_program", columnList = "program_id")
@@ -39,15 +42,20 @@ public class ClassEntity {
     @Column(nullable = false)
     private Integer semester;
 
+    @NotBlank
+    @Column(nullable = false, length = 9)
+    private String academicYear;
+
     @NotNull
     @Column(nullable = false)
-    private Integer academicYear;
+    private Integer capacity;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_id", nullable = false)
     private Program program;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "classEntity", cascade = CascadeType.ALL)
     private Set<Routine> routines = new HashSet<>();
 
@@ -63,11 +71,12 @@ public class ClassEntity {
     public ClassEntity() {
     }
 
-    public ClassEntity(String code, String name, Integer semester, Integer academicYear, Program program) {
+    public ClassEntity(String code, String name, Integer semester, String academicYear, Integer capacity, Program program) {
         this.code = code;
         this.name = name;
         this.semester = semester;
         this.academicYear = academicYear;
+        this.capacity = capacity;
         this.program = program;
     }
 
@@ -104,12 +113,20 @@ public class ClassEntity {
         this.semester = semester;
     }
 
-    public Integer getAcademicYear() {
+    public String getAcademicYear() {
         return academicYear;
     }
 
-    public void setAcademicYear(Integer academicYear) {
+    public void setAcademicYear(String academicYear) {
         this.academicYear = academicYear;
+    }
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
     }
 
     public Program getProgram() {

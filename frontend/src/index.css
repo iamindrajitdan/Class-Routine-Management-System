@@ -20,6 +20,8 @@ body {
   flex-direction: column;
   min-height: 100vh;
 }
+
+.btn-danger {
   background: var(--danger);
   color: white;
 }

@@ -1,0 +1,122 @@
+{
+  "id": "e50e8400-e29b-41d4-a716-446655440001",
+  "routine": {
+    "id": "c50e8400-e29b-41d4-a716-446655440001",
+    "classEntity": {
+      "id": "950e8400-e29b-41d4-a716-446655440001",
+      "code": "CS-3A",
+      "name": "CS 3rd Semester A",
+      "semester": 3,
+      "academicYear": "2025-2026",
+      "capacity": 40,
+      "program": {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "code": "CS",
+        "name": "Computer Science",
+        "description": "Computer Science Program",
+        "department": {
+          "id": "550e8400-e29b-41d4-a716-446655440000",
+          "code": "CS",
+          "name": "Computer Science",
+          "description": "Computer Science Department",
+          "createdAt": "2026-03-05T10:04:19.384083",
+          "updatedAt": "2026-03-05T10:04:20.206538"
+        },
+        "createdAt": "2026-03-05T10:04:19.900531",
+        "updatedAt": "2026-03-05T10:04:20.183917"
+      },
+      "createdAt": "2026-03-05T10:04:19.900531",
+      "updatedAt": "2026-03-05T10:04:19.900531"
+    },
+    "teacher": {
+      "id": "650e8400-e29b-41d4-a716-446655440001",
+      "code": "T-0001",
+      "user": {
+        "id": "560e8400-e29b-41d4-a716-446655440001",
+        "email": "john.smith@crms.edu",
+        "passwordHash": "$2b$12$fake_hash_john",
+        "firstName": "John",
+        "lastName": "Smith",
+        "role": "FACULTY",
+        "isActive": true,
+        "createdAt": "2026-03-05T10:04:19.900531",
+        "updatedAt": "2026-03-05T10:04:19.900531"
+      },
+      "specialization": "Data Structures",
+      "isAvailable": true,
+      "createdAt": "2026-03-05T10:04:19.900531",
+      "updatedAt": "2026-03-05T10:04:20.127784"
+    },
+    "subject": {
+      "id": "750e8400-e29b-41d4-a716-446655440001",
+      "code": "CS201",
+      "name": "Data Structures",
+      "description": "Introduction to Data Structures and Algorithms",
+      "creditHours": 3,
+      "program": null,
+      "createdAt": "2026-03-05T10:04:19.900531",
+      "updatedAt": "2026-03-05T10:04:19.900531"
+    },
+    "lesson": {
+      "id": "d50e8400-e29b-41d4-a716-446655440001",
+      "title": "Arrays and Lists",
+      "description": null,
+      "sequenceNumber": 1,
+      "subject": {
+        "id": "750e8400-e29b-41d4-a716-446655440001",
+        "code": "CS201",
+        "name": "Data Structures",
+        "description": "Introduction to Data Structures and Algorithms",
+        "creditHours": 3,
+        "program": null,
+        "createdAt": "2026-03-05T10:04:19.900531",
+        "updatedAt": "2026-03-05T10:04:19.900531"
+      },
+      "createdAt": "2026-03-05T10:04:19.900531",
+      "updatedAt": "2026-03-05T10:04:19.900531"
+    },
+    "timeSlot": {
+      "id": "b50e8400-e29b-41d4-a716-446655440001",
+      "dayOfWeek": "MONDAY",
+      "startTime": "09:00:00",
+      "endTime": "10:30:00",
+      "label": null,
+      "createdAt": "2026-03-05T10:04:19.900531",
+      "updatedAt": "2026-03-05T10:04:20.318717"
+    },
+    "classroom": {
+      "id": "a50e8400-e29b-41d4-a716-446655440001",
+      "code": "Room 101",
+      "building": "Main Building",
+      "floor": "1",
+      "capacity": 50,
+      "type": null,
+      "createdAt": "2026-03-05T10:04:19.900531",
+      "updatedAt": "2026-03-05T10:04:19.900531"
+    },
+    "routineType": "REGULAR",
+    "status": "ACTIVE",
+    "createdBy": {
+      "id": "560e8400-e29b-41d4-a716-446655440001",
+      "email": "john.smith@crms.edu",
+      "passwordHash": "$2b$12$fake_hash_john",
+      "firstName": "John",
+      "lastName": "Smith",
+      "role": "FACULTY",
+      "isActive": true,
+      "createdAt": "2026-03-05T10:04:19.900531",
+      "updatedAt": "2026-03-05T10:04:19.900531"
+    },
+    "createdAt": "2026-03-05T10:04:19.966978",
+    "updatedAt": "2026-03-05T10:04:19.966978"
+  },
+  "conflictType": "TEACHER_DOUBLE",
+  "description": "Teacher John Smith is scheduled for two different classes at the same time.",
+  "severity": "HIGH",
+  "status": "DETECTED",
+  "suggestedResolution": null,
+  "resolvedBy": null,
+  "resolvedAt": null,
+  "createdAt": "2026-03-05T10:04:19.966978",
+  "updatedAt": "2026-03-05T10:04:19.966978"
+}

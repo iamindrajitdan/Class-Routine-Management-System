@@ -14,6 +14,7 @@ import java.util.UUID;
  * Requirements: 9.1, 9.2, 9.3, 9.6
  */
 @Entity
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "notifications", indexes = {
         @Index(name = "idx_notification_user", columnList = "user_id"),
         @Index(name = "idx_notification_type", columnList = "notification_type"),

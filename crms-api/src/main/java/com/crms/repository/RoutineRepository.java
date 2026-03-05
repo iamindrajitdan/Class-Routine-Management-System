@@ -5,6 +5,7 @@ import com.crms.domain.ClassEntity;
 import com.crms.domain.Teacher;
 import com.crms.domain.TimeSlot;
 import com.crms.domain.Classroom;
+import com.crms.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -46,4 +47,6 @@ public interface RoutineRepository extends JpaRepository<Routine, UUID> {
 
     @Query("SELECT COUNT(r) FROM Routine r WHERE r.teacher = :teacher AND r.status = 'ACTIVE'")
     Long countActiveRoutinesByTeacher(@Param("teacher") Teacher teacher);
+    @Query("SELECT COUNT(r) FROM Routine r WHERE r.teacher.user = :user AND r.status = 'ACTIVE'")
+    Long countByTeacherUser(@Param("user") User user);
 }

@@ -8,6 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Routine Entity
  * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5
@@ -16,6 +18,7 @@ import java.util.UUID;
  * Core entity for the routine management system.
  */
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "routines", indexes = {
     @Index(name = "idx_routine_class", columnList = "class_id"),
     @Index(name = "idx_routine_teacher", columnList = "teacher_id"),

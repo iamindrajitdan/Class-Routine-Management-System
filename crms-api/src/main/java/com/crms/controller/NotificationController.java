@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import com.crms.repository.UserRepository;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,10 +25,15 @@ public class NotificationController {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Notification>> getUserNotifications(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
         List<Notification> notifications = notificationService.getUserNotifications(user);
         return ResponseEntity.ok(notifications);
     }
@@ -34,7 +41,9 @@ public class NotificationController {
     @GetMapping("/unread")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Notification>> getUnreadNotifications(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
         List<Notification> notifications = notificationService.getUnreadNotifications(user);
         return ResponseEntity.ok(notifications);
     }
@@ -42,7 +51,9 @@ public class NotificationController {
     @GetMapping("/unread/count")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Long> countUnreadNotifications(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
         Long count = notificationService.countUnreadNotifications(user);
         return ResponseEntity.ok(count);
     }

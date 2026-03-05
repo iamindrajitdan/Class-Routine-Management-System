@@ -15,7 +15,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 68px;
+  height: 76px;
+  /* Slightly taller for more breathing room */
   gap: 24px;
 }
 
@@ -36,13 +37,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #1a73e8 0%, #34a853 100%);
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
-  transition: all 0.3s ease;
-  animation: brandBounce 2.5s ease-in-out infinite;
+  width: 44px;
+  height: 44px;
+  background: var(--primary-light);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
 }
 
@@ -52,9 +51,12 @@
 }
 
 @keyframes brandBounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) rotateZ(0deg);
   }
+
   50% {
     transform: translateY(-6px) rotateZ(-2deg);
   }
@@ -67,8 +69,8 @@
 
 .navbar-brand svg {
   color: var(--primary-color);
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
 }
 
@@ -116,16 +118,20 @@
 .nav-link.active {
   color: var(--primary-color);
   background-color: var(--primary-light);
+  font-weight: 600;
 }
 
 .nav-link.active .nav-icon {
-  animation: iconFloat 1.5s ease-in-out infinite;
+  transform: scale(1.1);
 }
 
 @keyframes iconFloat {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-3px);
   }
@@ -133,6 +139,69 @@
 
 .nav-link span {
   display: inline;
+}
+
+/* Dropdown Styles */
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dropdown-arrow {
+  font-size: 10px;
+  margin-left: 2px;
+  opacity: 0.7;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--bg-primary);
+  min-width: 200px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 8px 0;
+  z-index: 100;
+  animation: slideDown 0.2s ease;
+}
+
+.nav-dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: var(--bg-secondary);
+  color: var(--primary-color);
+}
+
+.dropdown-item.active {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.dropdown-item .nav-icon {
+  font-size: 16px;
 }
 
 .navbar-actions {
@@ -286,6 +355,136 @@
   transform: scale(0.97);
 }
 
+/* Notification Bell */
+.notification-bell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
+}
+
+.notification-bell:hover {
+  background-color: var(--bg-tertiary);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-sm);
+}
+
+.bell-icon {
+  font-size: 20px;
+}
+
+.unread-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Hamburger Menu */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 101;
+}
+
+.hamburger .bar {
+  width: 24px;
+  height: 2px;
+  background-color: var(--text-primary);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger.active .bar:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger.active .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active .bar:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Notification Item Styles for History Page */
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.2s;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item.unread {
+  background-color: rgba(26, 115, 232, 0.03);
+}
+
+.notification-item.read {
+  opacity: 0.8;
+}
+
+.notification-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.unread-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+}
+
 /* Mobile responsive */
 @media (max-width: 1024px) {
   .navbar-menu {
@@ -302,13 +501,43 @@
 }
 
 @media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
   .navbar-container {
     padding: 0 16px;
-    height: 60px;
+    height: 64px;
   }
 
   .navbar-menu {
-    display: none;
+    position: fixed;
+    top: 64px;
+    left: -100%;
+    width: 100%;
+    height: calc(100vh - 64px);
+    background-color: var(--bg-primary);
+    flex-direction: column;
+    padding: 24px;
+    margin: 0;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    z-index: 100;
+  }
+
+  .navbar-menu.open {
+    left: 0;
+  }
+
+  .nav-link {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+
+  .nav-link span {
+    display: block;
   }
 
   .user-info {
@@ -316,24 +545,10 @@
   }
 
   .navbar-brand span {
-    display: none;
+    display: block;
   }
 
-  .navbar-brand {
-    font-size: 16px;
-  }
-
-  .theme-toggle-btn {
-    width: 52px;
-    height: 26px;
-  }
-
-  .toggle-slider {
-    width: 18px;
-    height: 18px;
-  }
-
-  .theme-toggle-btn.active .toggle-slider {
-    left: 30px;
+  .navbar-actions {
+    gap: 12px;
   }
 }

@@ -24,6 +24,11 @@ public class TimeSlotService {
     @Autowired
     private TimeSlotRepository timeSlotRepository;
 
+    @Cacheable(value = "time_slots")
+    public List<TimeSlot> findAll() {
+        return timeSlotRepository.findAll();
+    }
+
     @Cacheable(value = "time_slots", key = "#id")
     public TimeSlot getTimeSlotById(UUID id) {
         return timeSlotRepository.findById(id)

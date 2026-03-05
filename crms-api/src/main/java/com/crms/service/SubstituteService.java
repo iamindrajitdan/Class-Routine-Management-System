@@ -35,6 +35,9 @@ public class SubstituteService {
     @Autowired
     private ConflictDetectionService conflictDetectionService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Cacheable(value = "substitutes", key = "#id")
     public Substitute getSubstituteById(UUID id) {
         return substituteRepository.findById(id)
@@ -95,7 +98,9 @@ public class SubstituteService {
                 createdBy
         );
 
-        return substituteRepository.save(substitution);
+        Substitute saved = substituteRepository.save(substitution);
+        notificationService.notifySubstituteAssigned(substitute.getUser(), "You have been assigned as a substitute for " + routine.getSubject().getName() + " on " + substituteDate.toString());
+        return saved;
     }
 
     @CacheEvict(value = "substitutes", allEntries = true)

@@ -24,6 +24,9 @@ public class ConflictDetectionService {
     @Autowired
     private ConflictRepository conflictRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public List<Conflict> detectConflicts(Routine routine) {
         List<Conflict> conflicts = new ArrayList<>();
 
@@ -39,6 +42,15 @@ public class ConflictDetectionService {
         // Save detected conflicts
         if (!conflicts.isEmpty()) {
             conflictRepository.saveAll(conflicts);
+            // Notify the creator of the routine about the conflicts
+            if (routine.getCreatedBy() != null) {
+                conflicts.forEach(c -> 
+                    notificationService.notifyConflictDetected(
+                        routine.getCreatedBy(), 
+                        c.getConflictType().toString() + ": " + c.getDescription()
+                    )
+                );
+            }
         }
 
         return conflicts;
@@ -56,7 +68,7 @@ public class ConflictDetectionService {
             if (!existing.getId().equals(routine.getId())) {
                 Conflict conflict = new Conflict(
                         routine,
-                        Conflict.ConflictType.TEACHER_DOUBLE_BOOKING,
+                        Conflict.ConflictType.TEACHER_DOUBLE,
                         "Teacher " + routine.getTeacher().getUser().getFirstName() + " is already assigned to another class at this time",
                         Conflict.ConflictSeverity.CRITICAL
                 );
@@ -80,7 +92,7 @@ public class ConflictDetectionService {
             if (!existing.getId().equals(routine.getId())) {
                 Conflict conflict = new Conflict(
                         routine,
-                        Conflict.ConflictType.CLASSROOM_DOUBLE_BOOKING,
+                        Conflict.ConflictType.CLASSROOM_DOUBLE,
                         "Classroom " + routine.getClassroom().getCode() + " is already booked at this time",
                         Conflict.ConflictSeverity.HIGH
                 );
@@ -104,7 +116,7 @@ public class ConflictDetectionService {
             if (!existing.getId().equals(routine.getId())) {
                 Conflict conflict = new Conflict(
                         routine,
-                        Conflict.ConflictType.CLASS_DOUBLE_BOOKING,
+                        Conflict.ConflictType.CLASS_DOUBLE,
                         "Class " + routine.getClassEntity().getCode() + " already has a class scheduled at this time",
                         Conflict.ConflictSeverity.HIGH
                 );

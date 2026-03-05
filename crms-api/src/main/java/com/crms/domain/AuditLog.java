@@ -12,6 +12,7 @@ import java.util.UUID;
  * Requirements: 11.1, 11.2, 11.3, 11.4, 11.5
  */
 @Entity
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "audit_logs", indexes = {
         @Index(name = "idx_audit_user", columnList = "user_id"),
         @Index(name = "idx_audit_action", columnList = "action"),

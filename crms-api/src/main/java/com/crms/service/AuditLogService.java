@@ -11,6 +11,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -64,6 +65,10 @@ public class AuditLogService {
 
     public void logRead(User user, String resourceType, UUID resourceId) {
         logAction(user, "READ", resourceType, resourceId, null, null);
+    }
+
+    public List<AuditLog> findAll() {
+        return auditLogRepository.findAll();
     }
 
     private String getClientIpAddress() {

@@ -11,11 +11,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Program Entity (e.g., Computer Science, Business Administration)
  * Requirements: 1.1, 6.1
  */
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "programs", indexes = {
         @Index(name = "idx_program_code", columnList = "code"),
         @Index(name = "idx_program_department", columnList = "department_id")
@@ -42,6 +45,7 @@ public class Program {
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL)
     private Set<ClassEntity> classes = new HashSet<>();
 

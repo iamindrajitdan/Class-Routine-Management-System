@@ -12,11 +12,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * TimeSlot Entity (e.g., Monday 9:00-10:00 AM)
  * Requirements: 7.1, 7.2, 7.3
  */
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "time_slots", indexes = {
         @Index(name = "idx_timeslot_day", columnList = "day_of_week"),
         @Index(name = "idx_timeslot_time", columnList = "day_of_week, start_time")
@@ -43,6 +46,7 @@ public class TimeSlot {
     @Column(length = 100)
     private String label; // e.g., "Period 1", "Morning Session"
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "timeSlot", cascade = CascadeType.ALL)
     private Set<Routine> routines = new HashSet<>();
 

@@ -3,6 +3,9 @@ package com.crms.service;
 import com.crms.domain.*;
 import com.crms.repository.HolidayRepository;
 import com.crms.repository.ExamPeriodRepository;
+import com.crms.repository.AcademicYearRepository;
+import com.crms.repository.SemesterRepository;
+import com.crms.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,6 +30,18 @@ public class CalendarService {
     @Autowired
     private ExamPeriodRepository examPeriodRepository;
 
+    @Autowired
+    private SemesterRepository semesterRepository;
+
+    @Autowired
+    private AcademicYearRepository academicYearRepository;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Cacheable(value = "holidays", key = "#id")
     public Holiday getHolidayById(UUID id) {
         return holidayRepository.findById(id)
@@ -41,11 +56,13 @@ public class CalendarService {
 
     @Cacheable(value = "holidays_by_date", key = "#date")
     public List<Holiday> getHolidaysByDate(LocalDate date) {
+        if (date == null) return holidayRepository.findAll();
         return holidayRepository.findByHolidayDate(date);
     }
 
     @Cacheable(value = "exam_periods_by_date", key = "#date")
     public List<ExamPeriod> getExamPeriodsByDate(LocalDate date) {
+        if (date == null) return examPeriodRepository.findAll();
         return examPeriodRepository.findByDateRange(date);
     }
 
@@ -57,16 +74,38 @@ public class CalendarService {
         return !examPeriodRepository.findByDateRange(date).isEmpty();
     }
 
+    public boolean isDowntime(LocalDate date) {
+        return isHoliday(date) || isExamPeriod(date);
+    }
+
     @CacheEvict(value = {"holidays", "holidays_by_date"}, allEntries = true)
     public Holiday createHoliday(Holiday holiday) {
         validateHoliday(holiday);
-        return holidayRepository.save(holiday);
+        Holiday saved = holidayRepository.save(holiday);
+        notifyAllUsers("Institutional Holiday: " + saved.getName(), 
+                "A holiday has been scheduled for " + saved.getHolidayDate() + ". All regular classes are suspended.");
+        return saved;
     }
 
     @CacheEvict(value = {"exam_periods", "exam_periods_by_date"}, allEntries = true)
     public ExamPeriod createExamPeriod(ExamPeriod examPeriod) {
         validateExamPeriod(examPeriod);
-        return examPeriodRepository.save(examPeriod);
+        ExamPeriod saved = examPeriodRepository.save(examPeriod);
+        notifyAllUsers("Exam Period Scheduled: " + saved.getName(), 
+                "An examination period has been scheduled from " + saved.getStartDate() + " to " + saved.getEndDate() + ".");
+        return saved;
+    }
+
+    private void notifyAllUsers(String title, String message) {
+        try {
+            List<User> users = userRepository.findAll();
+            for (User user : users) {
+                notificationService.createNotification(user, title, message, Notification.NotificationType.SYSTEM_ALERT);
+            }
+        } catch (Exception e) {
+            // Log error but don't fail the primary action
+            System.err.println("Failed to send global notifications: " + e.getMessage());
+        }
     }
 
     @CacheEvict(value = {"holidays", "holidays_by_date"}, allEntries = true)
@@ -125,5 +164,41 @@ public class CalendarService {
         if (examPeriod.getStartDate().isAfter(examPeriod.getEndDate())) {
             throw new IllegalArgumentException("Start date must be before end date");
         }
+    }
+
+    // Academic Year Methods
+    public List<AcademicYear> getAllAcademicYears() {
+        return academicYearRepository.findAll();
+    }
+
+    public AcademicYear createAcademicYear(AcademicYear academicYear) {
+        if (academicYear.getStartDate().isAfter(academicYear.getEndDate())) {
+            throw new IllegalArgumentException("Start date must be before end date");
+        }
+        return academicYearRepository.save(academicYear);
+    }
+
+    public void deleteAcademicYear(UUID id) {
+        academicYearRepository.deleteById(id);
+    }
+
+    // Semester Methods
+    public List<Semester> getAllSemesters() {
+        return semesterRepository.findAll();
+    }
+
+    public Semester createSemester(Semester semester) {
+        AcademicYear ay = academicYearRepository.findById(semester.getAcademicYear().getId())
+                .orElseThrow(() -> new RuntimeException("Academic Year not found"));
+        
+        if (semester.getStartDate().isBefore(ay.getStartDate()) || semester.getEndDate().isAfter(ay.getEndDate())) {
+            throw new IllegalArgumentException("Semester dates must be within the Academic Year range");
+        }
+        
+        return semesterRepository.save(semester);
+    }
+
+    public void deleteSemester(UUID id) {
+        semesterRepository.deleteById(id);
     }
 }

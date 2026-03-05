@@ -9,11 +9,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Substitute Entity - tracks teacher substitutions
  * Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6
  */
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "substitutes", indexes = {
         @Index(name = "idx_substitute_routine", columnList = "routine_id"),
         @Index(name = "idx_substitute_teacher", columnList = "substitute_id"),

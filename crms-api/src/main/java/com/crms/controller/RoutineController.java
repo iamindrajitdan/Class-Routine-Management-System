@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import com.crms.repository.UserRepository;
 
 import jakarta.validation.Valid;
 import java.util.ArrayList;
@@ -28,6 +30,9 @@ public class RoutineController {
 
     @Autowired
     private RoutineService routineService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private AuditLogService auditLogService;
@@ -54,9 +59,13 @@ public class RoutineController {
     @PreAuthorize("hasAnyRole('ADMIN', 'ACADEMIC_PLANNER')")
     public ResponseEntity<Routine> createRoutine(@Valid @RequestBody Routine routine, Authentication authentication) {
         try {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User user = userRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            routine.setCreatedBy(user);
             Routine createdRoutine = routineService.createRoutine(routine);
             auditLogService.logCreate(
-                    (User) authentication.getPrincipal(),
+                    user,
                     "Routine",
                     createdRoutine.getId(),
                     createdRoutine
@@ -74,10 +83,13 @@ public class RoutineController {
             @Valid @RequestBody Routine routine,
             Authentication authentication) {
         try {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User adminUser = userRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
             Routine existingRoutine = routineService.getRoutineById(id);
             Routine updatedRoutine = routineService.updateRoutine(id, routine);
             auditLogService.logUpdate(
-                    (User) authentication.getPrincipal(),
+                    adminUser,
                     "Routine",
                     id,
                     existingRoutine,
@@ -94,8 +106,11 @@ public class RoutineController {
     public ResponseEntity<Void> deleteRoutine(@PathVariable UUID id, Authentication authentication) {
         Routine routine = routineService.getRoutineById(id);
         routineService.deleteRoutine(id);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User adminUser = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
         auditLogService.logDelete(
-                (User) authentication.getPrincipal(),
+                adminUser,
                 "Routine",
                 id,
                 routine

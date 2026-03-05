@@ -11,11 +11,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Lesson Entity (specific teaching unit within a subject)
  * Requirements: 6.2, 6.3
  */
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "lessons", indexes = {
         @Index(name = "idx_lesson_subject", columnList = "subject_id"),
         @Index(name = "idx_lesson_sequence", columnList = "subject_id, sequence_number")
@@ -42,6 +45,7 @@ public class Lesson {
     @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL)
     private Set<Routine> routines = new HashSet<>();
 

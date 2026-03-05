@@ -14,7 +14,7 @@ function Login({ onLogin, darkMode, toggleDarkMode }) {
     setLoading(true)
 
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/auth/login', {
+      const response = await axios.post('/api/v1/auth/login', {
         email,
         password
       })

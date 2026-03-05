@@ -11,11 +11,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Teacher Entity
  * Requirements: 1.1, 3.1, 6.1
  */
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "teachers", indexes = {
         @Index(name = "idx_teacher_code", columnList = "code"),
         @Index(name = "idx_teacher_user", columnList = "user_id")
@@ -42,9 +45,15 @@ public class Teacher {
     @Column(nullable = false)
     private Boolean isAvailable = true;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
+    private Set<FacultyAvailability> facultyAvailabilities = new HashSet<>();
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
     private Set<Routine> routines = new HashSet<>();
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "substitute", cascade = CascadeType.ALL)
     private Set<Substitute> substitutes = new HashSet<>();
 
@@ -137,5 +146,13 @@ public class Teacher {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Set<FacultyAvailability> getFacultyAvailabilities() {
+        return facultyAvailabilities;
+    }
+
+    public void setFacultyAvailabilities(Set<FacultyAvailability> facultyAvailabilities) {
+        this.facultyAvailabilities = facultyAvailabilities;
     }
 }

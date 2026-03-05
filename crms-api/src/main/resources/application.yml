@@ -4,7 +4,7 @@
 spring:
   application:
     name: class-routine-management-system
-  
+
   # Database Configuration (Requirement 12.1)
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:crms_db}
@@ -17,7 +17,7 @@ spring:
       connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1800000
-  
+
   # JPA/Hibernate Configuration
   jpa:
     hibernate:
@@ -34,14 +34,14 @@ spring:
         order_updates: true
         hbm2ddl:
           auto: none
-  
+
   # Flyway Configuration (Requirement 12.1)
   flyway:
     enabled: true
     baseline-on-migrate: true
     locations: classpath:db/migration
     validate-on-migrate: true
-  
+
   # Redis Configuration (Requirement 14.1, 14.2)
   data:
     redis:
@@ -53,13 +53,13 @@ spring:
           max-active: 8
           max-idle: 8
           min-idle: 0
-  
+
   # Cache Configuration
   cache:
     type: redis
     redis:
       time-to-live: 3600000 # 1 hour
-  
+
   # Mail Configuration (Requirement 9.1)
   mail:
     host: ${SMTP_HOST:smtp.gmail.com}
@@ -72,11 +72,11 @@ spring:
           auth: true
           starttls:
             enable: true
-  
+
   # Security Configuration
   security:
     jwt:
-      secret-key: ${JWT_SECRET:changeme-in-production}
+      secret-key: ${JWT_SECRET:4f7bd26e2a22537a7f722f465715291f0a06800e8b1d9bf5c110901e8a93aa5b}
       expiration: ${JWT_EXPIRATION:86400000} # 24 hours
       refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000} # 7 days
 

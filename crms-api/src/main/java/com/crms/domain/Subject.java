@@ -10,11 +10,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Subject Entity (e.g., Data Structures, Calculus)
  * Requirements: 6.1, 6.2
  */
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "subjects", indexes = {
         @Index(name = "idx_subject_code", columnList = "code")
 })
@@ -38,9 +41,24 @@ public class Subject {
     @Column(nullable = false)
     private Integer creditHours = 3;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Lesson> lessons = new HashSet<>();
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @ManyToMany
+    @JoinTable(
+        name = "subject_teachers",
+        joinColumns = @JoinColumn(name = "subject_id"),
+        inverseJoinColumns = @JoinColumn(name = "teacher_id")
+    )
+    private Set<Teacher> teachers = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "program_id")
+    private Program program;
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     private Set<Routine> routines = new HashSet<>();
 
@@ -110,6 +128,22 @@ public class Subject {
 
     public void setLessons(Set<Lesson> lessons) {
         this.lessons = lessons;
+    }
+
+    public Set<Teacher> getTeachers() {
+        return teachers;
+    }
+
+    public void setTeachers(Set<Teacher> teachers) {
+        this.teachers = teachers;
+    }
+
+    public Program getProgram() {
+        return program;
+    }
+
+    public void setProgram(Program program) {
+        this.program = program;
     }
 
     public Set<Routine> getRoutines() {

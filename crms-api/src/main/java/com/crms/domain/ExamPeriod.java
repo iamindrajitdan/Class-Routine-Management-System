@@ -3,21 +3,12 @@ package com.crms.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-/**
- * ExamPeriod Entity - represents exam periods when regular classes are suspended
- * Requirements: 4.1, 4.2, 4.6
- */
 @Entity
-@Table(name = "exam_periods", indexes = {
-        @Index(name = "idx_exam_period_dates", columnList = "start_date, end_date")
-})
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@Table(name = "exam_periods")
 public class ExamPeriod {
 
     @Id
@@ -25,7 +16,7 @@ public class ExamPeriod {
     private UUID id;
 
     @NotBlank
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false)
     private String name;
 
     @NotNull
@@ -39,112 +30,34 @@ public class ExamPeriod {
     @Column(length = 500)
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
-    private ExamType type = ExamType.MIDTERM;
+    @Column(length = 50)
+    private String type = "FINAL";
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by", nullable = false)
-    private User createdBy;
+    public ExamPeriod() {}
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    public enum ExamType {
-        MIDTERM,
-        FINAL,
-        SUPPLEMENTARY,
-        PRACTICAL
-    }
-
-    // Constructors
-    public ExamPeriod() {
-    }
-
-    public ExamPeriod(String name, LocalDate startDate, LocalDate endDate, String description, ExamType type, User createdBy) {
+    public ExamPeriod(String name, LocalDate startDate, LocalDate endDate, String description, String type) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.description = description;
         this.type = type;
-        this.createdBy = createdBy;
     }
 
-    // Getters and Setters
-    public UUID getId() {
-        return id;
-    }
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getName() {
-        return name;
-    }
+    public LocalDate getStartDate() { return startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public LocalDate getEndDate() { return endDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
-    public LocalDate getStartDate() {
-        return startDate;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public ExamType getType() {
-        return type;
-    }
-
-    public void setType(ExamType type) {
-        this.type = type;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 }

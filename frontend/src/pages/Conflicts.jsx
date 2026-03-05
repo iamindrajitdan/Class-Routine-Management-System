@@ -14,7 +14,7 @@ function Conflicts() {
   const fetchConflicts = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get('http://localhost:8080/api/v1/conflicts', {
+      const response = await axios.get('/api/v1/conflicts', {
         headers: { Authorization: `Bearer ${token}` }
       })
       setConflicts(response.data || [])
@@ -26,24 +26,39 @@ function Conflicts() {
     }
   }
 
+  const handleResolve = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(`/api/v1/conflicts/${id}/resolve`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchConflicts();
+    } catch (err) {
+      setError('Failed to resolve conflict');
+      console.error(err);
+    }
+  };
+
   return (
     <div className="conflicts-container fade-in">
       <div className="page-header">
         <h1>Conflicts</h1>
-        <button className="btn-primary">Detect Conflicts</button>
+        <button className="btn-primary" onClick={fetchConflicts}>Refresh</button>
       </div>
 
       {error && <div className="error-banner">{error}</div>}
 
       <div className="card">
         {loading ? (
-          <tbody>
-            {Array(5).fill(0).map((_,i)=>(
-              <tr key={i} className="skeleton-row">
-                <td colSpan="6"></td>
-              </tr>
-            ))}
-          </tbody>
+          <table className="conflicts-table">
+            <tbody>
+              {Array(5).fill(0).map((_, i) => (
+                <tr key={i} className="skeleton-row">
+                  <td colSpan="6" className="skeleton-cell"></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : conflicts.length === 0 ? (
           <p className="text-muted">No conflicts found</p>
         ) : (
@@ -67,7 +82,7 @@ function Conflicts() {
                   <td><span className={`severity ${conflict.severity?.toLowerCase()}`}>{conflict.severity}</span></td>
                   <td><span className="badge">{conflict.status}</span></td>
                   <td>
-                    <button className="btn-small">Resolve</button>
+                    <button className="btn-small" onClick={() => handleResolve(conflict.id)}>Resolve</button>
                   </td>
                 </tr>
               ))}

@@ -11,11 +11,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Classroom Entity
  * Requirements: 1.1, 2.2
  */
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "classrooms", indexes = {
         @Index(name = "idx_classroom_code", columnList = "code"),
         @Index(name = "idx_classroom_building", columnList = "building")
@@ -44,6 +47,7 @@ public class Classroom {
     @Column(length = 100)
     private String type; // e.g., "Lab", "Lecture Hall", "Seminar Room"
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL)
     private Set<Routine> routines = new HashSet<>();
 

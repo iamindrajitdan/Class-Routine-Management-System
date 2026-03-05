@@ -5,7 +5,22 @@ import Dashboard from './pages/Dashboard'
 import Routines from './pages/Routines'
 import Conflicts from './pages/Conflicts'
 import Substitutes from './pages/Substitutes'
+import Teachers from './pages/Teachers'
+import Classes from './pages/Classes'
+import Classrooms from './pages/Classrooms'
+import Optimize from './pages/Optimize'
+import Reports from './pages/Reports'
+import Calendar from './pages/Calendar'
+import AuditLogs from './pages/AuditLogs'
+import SupplementaryClasses from './pages/SupplementaryClasses'
+import AvailabilitySettings from './pages/AvailabilitySettings'
+import Subjects from './pages/Subjects'
+import Lessons from './pages/Lessons'
+import Notifications from './pages/Notifications'
+import Holidays from './pages/Holidays'
 import Navbar from './components/Navbar'
+import { LanguageProvider } from './context/LanguageContext'
+import { ToastProvider } from './components/Toast'
 import './App.css'
 
 function App() {
@@ -18,7 +33,7 @@ function App() {
     const token = localStorage.getItem('token')
     const userData = localStorage.getItem('user')
     const savedTheme = localStorage.getItem('theme')
-    
+
     if (token && userData) {
       setIsAuthenticated(true)
       setUser(JSON.parse(userData))
@@ -28,7 +43,7 @@ function App() {
       setDarkMode(true)
       document.documentElement.setAttribute('data-theme', 'dark')
     }
-    
+
     setLoading(false)
   }, [])
 
@@ -58,16 +73,20 @@ function App() {
   }
 
   return (
-    <Router>
-      {isAuthenticated && <Navbar user={user} onLogout={handleLogout} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />}
-      <MainContent
-        isAuthenticated={isAuthenticated}
-        handleLogin={handleLogin}
-        user={user}
-        darkMode={darkMode}
-        toggleDarkMode={toggleDarkMode}
-      />
-    </Router>
+    <LanguageProvider>
+      <ToastProvider>
+        <Router>
+          {isAuthenticated && <Navbar user={user} onLogout={handleLogout} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />}
+          <MainContent
+            isAuthenticated={isAuthenticated}
+            handleLogin={handleLogin}
+            user={user}
+            darkMode={darkMode}
+            toggleDarkMode={toggleDarkMode}
+          />
+        </Router>
+      </ToastProvider>
+    </LanguageProvider>
   )
 }
 
@@ -76,25 +95,77 @@ function MainContent({ isAuthenticated, handleLogin, user, darkMode, toggleDarkM
   return (
     <div key={location.pathname} className="page-content fade-in">
       <Routes>
-        <Route 
-          path="/login" 
-          element={isAuthenticated ? <Navigate to="/" /> : <Login onLogin={handleLogin} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />} 
+        <Route
+          path="/login"
+          element={isAuthenticated ? <Navigate to="/" /> : <Login onLogin={handleLogin} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />}
         />
-        <Route 
-          path="/" 
-          element={isAuthenticated ? <Dashboard user={user} /> : <Navigate to="/login" />} 
+        <Route
+          path="/"
+          element={isAuthenticated ? <Dashboard user={user} /> : <Navigate to="/login" />}
         />
-        <Route 
-          path="/routines" 
-          element={isAuthenticated ? <Routines /> : <Navigate to="/login" />} 
+        <Route
+          path="/routines"
+          element={isAuthenticated ? <Routines /> : <Navigate to="/login" />}
         />
-        <Route 
-          path="/conflicts" 
-          element={isAuthenticated ? <Conflicts /> : <Navigate to="/login" />} 
+        <Route
+          path="/conflicts"
+          element={isAuthenticated ? <Conflicts /> : <Navigate to="/login" />}
         />
-        <Route 
-          path="/substitutes" 
-          element={isAuthenticated ? <Substitutes /> : <Navigate to="/login" />} 
+        <Route
+          path="/substitutes"
+          element={isAuthenticated ? <Substitutes /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/teachers"
+          element={isAuthenticated ? <Teachers /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/classes"
+          element={isAuthenticated ? <Classes /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/rooms"
+          element={isAuthenticated ? <Classrooms /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/optimize"
+          element={isAuthenticated ? <Optimize /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/reports"
+          element={isAuthenticated ? <Reports /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/calendar"
+          element={isAuthenticated ? <Calendar /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/audit-logs"
+          element={isAuthenticated && user?.role === 'ADMIN' ? <AuditLogs /> : <Navigate to="/dashboard" />}
+        />
+        <Route
+          path="/supplementary"
+          element={isAuthenticated ? <SupplementaryClasses /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/availability"
+          element={isAuthenticated && user?.role === 'FACULTY' ? <AvailabilitySettings /> : <Navigate to="/dashboard" />}
+        />
+        <Route
+          path="/subjects"
+          element={isAuthenticated ? <Subjects /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/lessons"
+          element={isAuthenticated ? <Lessons /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/notifications"
+          element={isAuthenticated ? <Notifications /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/holidays"
+          element={isAuthenticated && (user?.role === 'ADMIN' || user?.role === 'ACADEMIC_PLANNER') ? <Holidays /> : <Navigate to="/dashboard" />}
         />
       </Routes>
     </div>

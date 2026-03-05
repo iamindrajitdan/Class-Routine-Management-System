@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import '../styles/Routines.css'
+import RoutineModal from '../components/RoutineModal'
 
 function Routines() {
   const [routines, setRoutines] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     fetchRoutines()
@@ -13,11 +15,12 @@ function Routines() {
 
   const fetchRoutines = async () => {
     try {
+      setLoading(true)
       const token = localStorage.getItem('token')
-      const response = await axios.get('http://localhost:8080/api/v1/routines', {
+      const response = await axios.get('/api/v1/routines', {
         headers: { Authorization: `Bearer ${token}` }
       })
-      setRoutines(response.data || [])
+      setRoutines(Array.isArray(response.data) ? response.data : [])
     } catch (err) {
       setError('Failed to load routines')
       console.error(err)
@@ -30,7 +33,7 @@ function Routines() {
     <div className="routines-container fade-in">
       <div className="page-header">
         <h1>Class Routines</h1>
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -59,10 +62,10 @@ function Routines() {
         </div>
       ) : (
         <div className="routines-grid">
-          {routines.map((routine) => (
+          {(Array.isArray(routines) ? routines : []).map((routine) => (
             <div key={routine.id} className="routine-card">
               <div className="routine-header">
-                <h3>{routine.name || 'Untitled Routine'}</h3>
+                <h3>{routine.subject?.name || 'Untitled Routine'}</h3>
                 <span className={`status-badge status-${routine.status?.toLowerCase()}`}>
                   {routine.status}
                 </span>
@@ -72,21 +75,21 @@ function Routines() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                   </svg>
-                  <span>{routine.classEntity?.name || 'N/A'}</span>
+                  <span>Class: {(routine.classEntity?.name || '') + ' ' + (routine.classEntity?.code || '')}</span>
                 </div>
                 <div className="detail-row">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
-                  <span>{routine.teacher?.firstName} {routine.teacher?.lastName}</span>
+                  <span>Teacher: {routine.teacher?.code}</span>
                 </div>
                 <div className="detail-row">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                   </svg>
-                  <span>{routine.subject?.name || 'N/A'}</span>
+                  <span>Lesson: {routine.lesson?.title || 'Unknown Lesson'}</span>
                 </div>
                 <div className="detail-row">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -100,7 +103,7 @@ function Routines() {
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                     <line x1="9" y1="3" x2="9" y2="21"></line>
                   </svg>
-                  <span>{routine.classroom?.name || 'N/A'}</span>
+                  <span>Classroom: {routine.classroom?.code || 'N/A'}</span>
                 </div>
               </div>
               <div className="routine-actions">
@@ -123,6 +126,11 @@ function Routines() {
           ))}
         </div>
       )}
+      <RoutineModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={fetchRoutines}
+      />
     </div>
   )
 }

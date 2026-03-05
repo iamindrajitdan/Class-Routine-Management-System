@@ -20,6 +20,9 @@ public interface TeacherRepository extends JpaRepository<Teacher, UUID> {
 
     Optional<Teacher> findByUser(User user);
 
+    @Query("SELECT t FROM Teacher t WHERE t.user.id = :userId")
+    Optional<Teacher> findByUserId(@Param("userId") UUID userId);
+
     List<Teacher> findByIsAvailable(Boolean isAvailable);
 
     @Query("SELECT t FROM Teacher t WHERE t.isAvailable = true")

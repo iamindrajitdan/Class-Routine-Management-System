@@ -8,6 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * User Entity
  * Requirements: 8.1, 8.2, 15.1
@@ -16,6 +18,7 @@ import java.util.UUID;
  * Supports four roles: Admin, Academic_Planner, Faculty, Student
  */
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "users", indexes = {
     @Index(name = "idx_user_email", columnList = "email"),
     @Index(name = "idx_user_role", columnList = "role")
@@ -47,6 +50,7 @@ public class User {
     @Column(nullable = false, length = 50)
     private UserRole role;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department;

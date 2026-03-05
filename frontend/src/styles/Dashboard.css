@@ -39,12 +39,12 @@
 .stat-card {
   background-color: var(--bg-primary);
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: 32px;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
   border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   animation: fadeIn 0.4s ease;
   position: relative;
@@ -58,14 +58,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
   pointer-events: none;
 }
 
 .stat-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-4px);
-  border-color: var(--primary-color);
 }
 
 .stat-icon {
@@ -164,14 +163,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 28px;
+  justify-content: center;
+  gap: 16px;
+  padding: 36px 24px;
   border: 2px solid var(--border-color);
   background-color: var(--bg-secondary);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+  font-size: 15px;
   font-weight: 500;
   color: var(--text-primary);
   position: relative;
@@ -185,15 +185,16 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left 0.5s ease;
 }
 
 .action-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-6px);
-  border-color: var(--action-color);
   background-color: var(--bg-primary);
+  border-color: transparent;
+  /* Cleaner hover state */
 }
 
 .action-card:hover::before {
@@ -205,8 +206,8 @@
 }
 
 .action-icon {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -260,9 +261,12 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }

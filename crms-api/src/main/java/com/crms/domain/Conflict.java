@@ -9,11 +9,14 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Conflict Entity - tracks scheduling conflicts
  * Requirements: 2.1, 2.2, 2.3, 2.4, 2.5
  */
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "conflicts", indexes = {
         @Index(name = "idx_conflict_routine", columnList = "routine_id"),
         @Index(name = "idx_conflict_type", columnList = "conflict_type"),
@@ -68,9 +71,9 @@ public class Conflict {
     private LocalDateTime updatedAt;
 
     public enum ConflictType {
-        TEACHER_DOUBLE_BOOKING,
-        CLASSROOM_DOUBLE_BOOKING,
-        CLASS_DOUBLE_BOOKING,
+        TEACHER_DOUBLE,
+        CLASSROOM_DOUBLE,
+        CLASS_DOUBLE,
         TIME_SLOT_OVERLAP,
         TEACHER_UNAVAILABLE,
         CLASSROOM_CAPACITY_EXCEEDED
