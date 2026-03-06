@@ -67,6 +67,8 @@ public class Substitute {
     private LocalDateTime updatedAt;
 
     public enum SubstituteStatus {
+        PENDING,
+        APPROVED,
         ACTIVE,
         COMPLETED,
         CANCELLED

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import axios from 'axios'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Routines from './pages/Routines'
@@ -35,8 +36,15 @@ function App() {
     const savedTheme = localStorage.getItem('theme')
 
     if (token && userData) {
-      setIsAuthenticated(true)
-      setUser(JSON.parse(userData))
+      try {
+        setIsAuthenticated(true)
+        setUser(JSON.parse(userData))
+      } catch (e) {
+        console.error('Error parsing user data:', e)
+        localStorage.clear()
+        setIsAuthenticated(false)
+        setUser(null)
+      }
     }
 
     if (savedTheme === 'dark') {
@@ -45,6 +53,21 @@ function App() {
     }
 
     setLoading(false)
+
+    // Global Axios Interceptor for Auth Errors
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          handleLogout()
+        }
+        return Promise.reject(error)
+      }
+    )
+
+    return () => {
+      axios.interceptors.response.eject(interceptor)
+    }
   }, [])
 
   const toggleDarkMode = () => {
@@ -141,7 +164,7 @@ function MainContent({ isAuthenticated, handleLogin, user, darkMode, toggleDarkM
         />
         <Route
           path="/audit-logs"
-          element={isAuthenticated && user?.role === 'ADMIN' ? <AuditLogs /> : <Navigate to="/dashboard" />}
+          element={isAuthenticated && user?.role === 'ADMIN' ? <AuditLogs /> : <Navigate to="/" />}
         />
         <Route
           path="/supplementary"
@@ -149,7 +172,7 @@ function MainContent({ isAuthenticated, handleLogin, user, darkMode, toggleDarkM
         />
         <Route
           path="/availability"
-          element={isAuthenticated && user?.role === 'FACULTY' ? <AvailabilitySettings /> : <Navigate to="/dashboard" />}
+          element={isAuthenticated && user?.role === 'FACULTY' ? <AvailabilitySettings /> : <Navigate to="/" />}
         />
         <Route
           path="/subjects"
@@ -165,8 +188,9 @@ function MainContent({ isAuthenticated, handleLogin, user, darkMode, toggleDarkM
         />
         <Route
           path="/holidays"
-          element={isAuthenticated && (user?.role === 'ADMIN' || user?.role === 'ACADEMIC_PLANNER') ? <Holidays /> : <Navigate to="/dashboard" />}
+          element={isAuthenticated && (user?.role === 'ADMIN' || user?.role === 'ACADEMIC_PLANNER') ? <Holidays /> : <Navigate to="/" />}
         />
+        <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />} />
       </Routes>
     </div>
   )

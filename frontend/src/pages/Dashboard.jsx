@@ -100,7 +100,18 @@ function Dashboard({ user }) {
   )
 
   if (loading) return <div className="dashboard-container"><div className="loading">Loading dashboard...</div></div>
-
+  if (error || !stats) return (
+    <div className="dashboard-container fade-in">
+      <div className="dashboard-header">
+        <h1>Dashboard Error</h1>
+        <p className="subtitle">{error || 'Could not load dashboard statistics.'}</p>
+        <button className="primary-button" style={{ marginTop: '1rem' }} onClick={() => {
+          localStorage.clear();
+          navigate('/login');
+        }}>Return to Login</button>
+      </div>
+    </div>
+  )
   return (
     <div className="dashboard-container fade-in">
       <div className="dashboard-header">

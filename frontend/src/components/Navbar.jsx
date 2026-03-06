@@ -194,12 +194,6 @@ function Navbar({ user, onLogout, darkMode, toggleDarkMode }) {
             {t('logout')}
           </button>
 
-          <div className="language-selector">
-            <select value={language} onChange={(e) => changeLanguage(e.target.value)}>
-              <option value="en">English</option>
-              <option value="bn">বাংলা</option>
-            </select>
-          </div>
 
           <button className={`hamburger ${isMenuOpen ? 'active' : ''}`} onClick={toggleMenu} aria-label="Menu">
             <span className="bar"></span>
