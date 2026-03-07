@@ -1,12 +1,12 @@
 # Class Routine Management System (CRMS)
 
-A university-grade, cloud-ready platform for managing academic schedules with AI-assisted timetable optimization, conflict detection, and comprehensive reporting.
+A university-grade platform for managing academic schedules with AI-assisted timetable optimization, conflict detection, and comprehensive reporting. Highly optimized for containerized deployment.
 
 ## Project Overview
 
 This is a full-stack SaaS application designed for academic institutions to manage class routines, teacher schedules, classroom allocations, and student timetables with intelligent constraint solving and optimization.
 
-**Status**: ✅ **Phase 1-7 & 15-16 Complete** | Backend API + React Dashboard Ready
+**Status**: ✅ **Production-Ready Core** | Backend APIs & React Dashboard fully operational via Docker.
 
 ## Architecture
 
@@ -57,27 +57,31 @@ This is a full-stack SaaS application designed for academic institutions to mana
 - Docker & Docker Compose
 - Node.js 18+ (for local frontend development)
 
-### Option 1: Docker (Recommended - Everything in One Command)
+### Deployment (Everything in One Command)
+
+The project is fully containerized. You do not need to install Java or Maven locally if you use Docker.
 
 ```bash
 # Clone repository
 git clone https://github.com/iamindrajitdan/Class-Routine-Management-System.git
 cd Class-Routine-Management-System
 
-# Build the project
-mvn clean package -DskipTests
+# Start all services (Database, Redis, API, Frontend)
+docker-compose up -d --build
 
-# Start all services (API + Frontend + Database + Cache)
-docker-compose up -d
-
-# Verify services
+# Verify services are healthy
 docker-compose ps
-
-# Access the application
-# Frontend Dashboard: http://localhost:3000
-# API: http://localhost:8080
-# Swagger UI: http://localhost:8080/swagger-ui.html
 ```
+
+Once started, the system automatically initializes the PostgreSQL database and applies all migrations via Flyway.
+
+### Accessing the System
+
+| Interface | URL |
+|-----------|-----|
+| **Frontend Dashboard** | [http://localhost:3000](http://localhost:3000) |
+| **API Health** | [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health) |
+| **Swagger documentation** | [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) |
 
 ### Option 2: Local Development (Backend + Docker Infrastructure)
 
@@ -120,26 +124,16 @@ docker-compose up -d
 
 ## Default Credentials
 
-For local development, use these credentials:
+The system comes pre-loaded with demo data. Use these credentials to explore:
 
-| Email | Password | Role |
-|-------|----------|------|
-| admin@crms.edu | password123 | ADMIN |
-| planner@crms.edu | password123 | ACADEMIC_PLANNER |
-| faculty@crms.edu | password123 | FACULTY |
-| student@crms.edu | password123 | STUDENT |
+| Role | Email | Password |
+|------|-------|----------|
+| **Admin** | `admin@crms.edu` | `password123` |
+| **Planner** | `planner@crms.edu` | `password123` |
+| **Faculty** | `faculty@crms.edu` | `password123` |
+| **Student** | `student@crms.edu` | `password123` |
 
-⚠️ **Change these in production!**
-
-## Access the Application
-
-Once services are running:
-
-- **Frontend Dashboard**: http://localhost:3000
-- **API Base URL**: http://localhost:8080
-- **Swagger UI**: http://localhost:8080/swagger-ui.html
-- **Health Check**: http://localhost:8080/actuator/health
-- **Metrics**: http://localhost:8080/actuator/metrics
+⚠️ **Important**: In a production environment, ensure you update these default passwords in the database.
 
 ## Frontend Features
 

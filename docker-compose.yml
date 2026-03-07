@@ -2,14 +2,20 @@ services:
   db:
     image: postgres:15-alpine
     environment:
-      - POSTGRES_DB=crms
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=crms_db
+      - POSTGRES_USER=crms_user
+      - POSTGRES_PASSWORD=crms_password
     ports:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crms_user -d crms_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - crms-network
 
   api:
     build:
@@ -18,19 +24,29 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/crms
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=crms_db
+      - DB_USER=crms_user
+      - DB_PASSWORD=crms_password
       - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
       - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - crms-network
 
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    networks:
+      - crms-network
 
   frontend:
     build: ./frontend
@@ -38,6 +54,12 @@ services:
       - "3000:80"
     depends_on:
       - api
+    networks:
+      - crms-network
+
+networks:
+  crms-network:
+    driver: bridge
 
 volumes:
   db-data:

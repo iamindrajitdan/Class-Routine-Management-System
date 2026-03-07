@@ -42,51 +42,43 @@ You are working on a **Class Routine Management System (CRMS)** - a full-stack w
 ### ✅ Completed Features
 1. **Authentication System**
    - JWT-based authentication with access & refresh tokens
-   - BCrypt password hashing (using PostgreSQL pgcrypto)
+   - BCrypt password hashing
    - Login endpoint: `POST /api/v1/auth/login`
    - Demo users: admin@crms.edu, planner@crms.edu, faculty@crms.edu, student@crms.edu (password: password123)
 
 2. **Modern UI/UX**
-   - Google Material Design-inspired minimalistic interface
-   - Dark mode toggle with persistent theme (localStorage)
-   - Responsive design for mobile/tablet/desktop
-   - Smooth animations and transitions
-   - Clean color palette with CSS variables
+   - Material Design-inspired interface with Dark Mode support.
+   - Fully responsive React Dashboard verified on mobile and desktop.
+   - Integrated notifications and audit logs.
 
-3. **Database Setup**
-   - PostgreSQL with Flyway migrations (V1, V2, V3 applied)
-   - Entities: User, Department, Routine, Conflict, Teacher, Subject, TimeSlot, etc.
-   - Proper relationships and constraints
+3. **Database & Infrastructure**
+   - PostgreSQL with 22+ Flyway migrations applied automatically.
+   - Full domain model: Users, Departments, Routines, Conflicts, Teachers, Subjects, TimeSlots, etc.
+   - Dockerized environment with Health Checks and explicit networking.
 
-4. **Docker Infrastructure**
-   - Multi-container setup (API, Frontend, PostgreSQL, Redis)
-   - Health checks for all services
-   - Persistent volumes for database
-   - CORS configured for frontend-backend communication
-
-### 🚧 Incomplete/Placeholder Features
-1. **Dashboard Statistics** - Currently shows 0 values (API endpoints not implemented)
-2. **Routines Management** - Page exists but no CRUD operations
-3. **Conflicts Detection** - Page exists but no conflict logic
-4. **Substitutes Management** - Page exists but no allocation logic
-5. **Quick Actions** - Buttons exist but not connected to functionality
+4. **Functional Modules**
+   - **Dashboard Statistics**: Fully implemented and fetching data from API.
+   - **Routine Management**: Full CRUD support implemented.
+   - **Conflict Detection**: Automated detection and resolution APIs working.
+   - **Notifications**: Email and system alerts functional (fixed and verified).
+   - **Substitutes**: Allocation logic and UI completed.
 
 ## API Endpoints Status
 
 ### ✅ Implemented
 - `POST /api/v1/auth/login` - User login
-- `POST /api/v1/auth/refresh` - Refresh token
-
-### ❌ Not Implemented (Need to be created)
-- `GET /api/v1/routines` - List all routines
-- `POST /api/v1/routines` - Create routine
-- `PUT /api/v1/routines/{id}` - Update routine
-- `DELETE /api/v1/routines/{id}` - Delete routine
-- `GET /api/v1/conflicts` - List conflicts
-- `POST /api/v1/conflicts/detect` - Detect conflicts
-- `GET /api/v1/substitutes` - List substitutes
-- `POST /api/v1/substitutes` - Allocate substitute
 - `GET /api/v1/dashboard/stats` - Dashboard statistics
+- `GET /api/v1/routines` - List all routines
+- `GET /api/v1/notifications` - User notifications
+- `GET /api/v1/conflicts` - List conflicts
+- `GET /api/v1/teachers` - List teachers
+- `GET /api/v1/subjects` - List subjects
+- `GET /api/v1/classes` - List classes
+- `GET /api/v1/classrooms` - List classrooms
+- `GET /api/v1/time-slots` - List time slots
+- `GET /api/v1/audit-logs` - System audit logs
+- `GET /api/v1/substitutes` - List substitutes
+- `GET /api/v1/calendar/holidays` - Holiday management
 
 ## Design Patterns & Conventions
 
@@ -237,38 +229,21 @@ docker-compose down -v
 ```
 
 ## Next Steps / TODO
-1. **Implement Routine Management**
-   - Create RoutineController with CRUD endpoints
-   - Build RoutineService with business logic
-   - Create frontend forms for routine creation/editing
-   - Add validation and error handling
+1. **AI Optimization Enhancements**
+   - Fine-tune GOOGLE OR-Tools constraints for specific institution needs.
+   - Add more complex scheduling rules (e.g., specific teacher preferences).
 
-2. **Implement Conflict Detection**
-   - Create ConflictController with detection logic
-   - Implement ConflictDetectionService (already exists, needs completion)
-   - Build conflict resolution UI
-   - Add real-time conflict notifications
+2. **Reporting**
+   - Implement PDF/Excel export for the generated routines.
+   - Add departmental analytic reports.
 
-3. **Implement Substitute Management**
-   - Create SubstituteController
-   - Complete SubstituteService logic
-   - Build substitute allocation UI
-   - Add teacher availability checking
+3. **User Management UI**
+   - Build a comprehensive Admin UI for creating departments, subjects, and classrooms.
+   - Add bulk import functionality for historical data.
 
-4. **Dashboard Statistics**
-   - Create DashboardController with stats endpoint
-   - Aggregate data from multiple services
-   - Update frontend Dashboard to fetch real data
-   - Add charts/graphs for visualization
-
-5. **Additional Features**
-   - Teacher management CRUD
-   - Subject management CRUD
-   - TimeSlot management
-   - Calendar view for routines
-   - Export/Import functionality
-   - Notification system
-   - Audit logging
+4. **Testing Coverage**
+   - Increase unit test coverage for the AI optimization logic.
+   - Add end-to-end Playwright/Cypress tests for critical user flows.
 
 ## Important Notes
 - Always use JWT token in Authorization header: `Bearer <token>`
