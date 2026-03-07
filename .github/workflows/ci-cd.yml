@@ -38,7 +38,7 @@ jobs:
         run: mvn -B package --file crms-api/pom.xml
 
       - name: Security Scan (OWASP)
-        run: mvn dependency-check:check --file crms-api/pom.xml
+        run: mvn org.owasp:dependency-check-maven:12.2.0:check --file crms-api/pom.xml
 
       - name: Docker Build & Push
         if: github.event_name == 'push'
