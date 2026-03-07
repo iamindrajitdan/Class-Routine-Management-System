@@ -14,7 +14,7 @@ const AuditLogs = () => {
     const fetchLogs = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:8080/api/v1/audit-logs', {
+            const response = await axios.get('/api/v1/audit-logs', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setLogs(response.data);
@@ -28,11 +28,11 @@ const AuditLogs = () => {
     if (loading) return <div className="loading">Loading audit logs...</div>;
 
     return (
-        <div className="teachers-page">
-            <div className="page-header">
-                <div className="header-content">
+        <div className="dashboard-container">
+            <div className="dashboard-header">
+                <div>
                     <h1>System Audit Logs</h1>
-                    <p>Review system activities, resource changes, and user actions for institutional compliance.</p>
+                    <p className="subtitle">Review system activities, resource changes, and user actions for institutional compliance.</p>
                 </div>
             </div>
 
@@ -66,12 +66,6 @@ const AuditLogs = () => {
                 </table>
             </div>
 
-            <style jsx>{`
-                .action-create { background: rgba(52, 168, 83, 0.1); color: #34a853; }
-                .action-update { background: rgba(251, 188, 5, 0.1); color: #fbbc05; }
-                .action-delete { background: rgba(234, 67, 53, 0.1); color: #ea4335; }
-                .action-login { background: rgba(26, 115, 232, 0.1); color: #1a73e8; }
-            `}</style>
         </div>
     );
 };

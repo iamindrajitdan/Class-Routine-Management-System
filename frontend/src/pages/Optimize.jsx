@@ -17,7 +17,7 @@ const Optimize = () => {
     const fetchReferenceData = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:8080/api/v1/reference-data', {
+            const response = await axios.get('/api/v1/reference-data', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setReferenceData(response.data);
@@ -51,7 +51,7 @@ const Optimize = () => {
                 softConstraintsEnabled: true
             };
 
-            const response = await axios.post('http://localhost:8080/api/v1/optimize', request, {
+            const response = await axios.post('/api/v1/optimize', request, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -70,7 +70,7 @@ const Optimize = () => {
         try {
             const token = localStorage.getItem('token');
             for (const suggestion of results.suggestions) {
-                await axios.post('http://localhost:8080/api/v1/routines', suggestion, {
+                await axios.post('/api/v1/routines', suggestion, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             }
@@ -156,62 +156,6 @@ const Optimize = () => {
                 )}
             </div>
 
-            <style jsx>{`
-        .optimize-container {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 2rem;
-          margin-top: 2rem;
-        }
-        .lesson-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-          gap: 1rem;
-          max-height: 400px;
-          overflow-y: auto;
-          padding: 1rem 0;
-        }
-        .lesson-card {
-          border: 2px solid var(--border-color);
-          border-radius: 12px;
-          padding: 1rem;
-          cursor: pointer;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          transition: all 0.2s;
-        }
-        .lesson-card:hover {
-          border-color: var(--primary-color);
-          background: rgba(26, 115, 232, 0.05);
-        }
-        .lesson-card.selected {
-          border-color: var(--primary-color);
-          background: rgba(26, 115, 232, 0.1);
-        }
-        .lesson-title {
-          display: block;
-          font-weight: 600;
-        }
-        .subject-name {
-          font-size: 0.85rem;
-          color: var(--text-secondary);
-        }
-        .results-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1rem;
-        }
-        .btn-success {
-          background: #34a853;
-          color: white;
-          border: none;
-          padding: 0.5rem 1rem;
-          border-radius: 8px;
-          cursor: pointer;
-        }
-      `}</style>
         </div>
     );
 };

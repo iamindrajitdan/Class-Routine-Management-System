@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/Dashboard.css';
+import { useToast } from '../components/Toast';
 
 const Lessons = () => {
+    const { showToast } = useToast();
     const [lessons, setLessons] = useState([]);
     const [subjects, setSubjects] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({ subjectId: '', type: 'THEORY', durationMinutes: 60 });
 
@@ -21,11 +24,13 @@ const Lessons = () => {
                 axios.get('/api/v1/lessons', { headers }),
                 axios.get('/api/v1/subjects', { headers })
             ]);
-            setLessons(lessRes.data);
-            setSubjects(subjRes.data);
+            setLessons(lessRes.data || []);
+            setSubjects(subjRes.data || []);
             setLoading(false);
+            setError(null);
         } catch (error) {
             console.error('Error fetching data:', error);
+            setError('Failed to load data. Please check the backend connection.');
             setLoading(false);
         }
     };
@@ -48,6 +53,20 @@ const Lessons = () => {
         }
     };
 
+    const handleDelete = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this lesson mapping?')) return;
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete(`/api/v1/lessons/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            showToast('Lesson mapping deleted', 'success');
+            fetchData();
+        } catch (error) {
+            showToast('Failed to delete lesson', 'error');
+        }
+    };
+
     return (
         <div className="dashboard-container">
             <div className="dashboard-header">
@@ -57,7 +76,7 @@ const Lessons = () => {
 
             <div className="section">
                 <div className="activity-card">
-                    {loading ? <p>Loading...</p> : (
+                    {loading ? <p>Loading...</p> : error ? <p className="error-message">{error}</p> : (
                         <table className="data-table">
                             <thead>
                                 <tr>
@@ -70,11 +89,11 @@ const Lessons = () => {
                             <tbody>
                                 {lessons.map(lesson => (
                                     <tr key={lesson.id}>
-                                        <td><strong>{lesson.subject?.code}</strong> - {lesson.subject?.name}</td>
-                                        <td><span className={`badge ${lesson.type.toLowerCase()}`}>{lesson.type}</span></td>
+                                        <td><strong>{lesson.subject?.code || 'N/A'}</strong> - {lesson.subject?.name || 'Unknown'}</td>
+                                        <td><span className={`badge ${(lesson.type || 'UNKNOWN').toLowerCase()}`}>{lesson.type || 'UNKNOWN'}</span></td>
                                         <td>{lesson.durationMinutes} mins</td>
                                         <td>
-                                            <button className="btn-icon delete">🗑️</button>
+                                            <button className="btn-icon delete" onClick={() => handleDelete(lesson.id)}>🗑️</button>
                                         </td>
                                     </tr>
                                 ))}

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import '../styles/Dashboard.css'
 
+import StatCard from '../components/StatCard'
+
 function Dashboard({ user }) {
   const navigate = useNavigate()
   const [stats, setStats] = useState(null)
@@ -30,71 +32,35 @@ function Dashboard({ user }) {
 
   const renderAdminStats = () => (
     <>
-      <div className="stat-card clickable" style={{ '--accent-color': '#4285f4' }} onClick={() => navigate('/routines')}>
-        <div className="stat-icon gradient-blue"><span className="stat-emoji">📅</span></div>
-        <div className="stat-content">
-          <div className="stat-value">{stats.totalRoutines}</div>
-          <div className="stat-label">Total Routines</div>
-        </div>
+      <div onClick={() => navigate('/routines')}>
+        <StatCard title="Total Routines" value={stats.totalRoutines} icon="📅" color="#4285f4" />
       </div>
-      <div className="stat-card clickable" style={{ '--accent-color': '#ea4335' }} onClick={() => navigate('/conflicts')}>
-        <div className="stat-icon gradient-red"><span className="stat-emoji">⚠️</span></div>
-        <div className="stat-content">
-          <div className="stat-value">{stats.totalConflicts}</div>
-          <div className="stat-label">Active Conflicts</div>
-        </div>
+      <div onClick={() => navigate('/conflicts')}>
+        <StatCard title="Active Conflicts" value={stats.totalConflicts} icon="⚠️" color="#ea4335" />
       </div>
-      <div className="stat-card clickable" style={{ '--accent-color': '#34a853' }} onClick={() => navigate('/teachers')}>
-        <div className="stat-icon gradient-green"><span className="stat-emoji">👨‍🏫</span></div>
-        <div className="stat-content">
-          <div className="stat-value">{stats.totalTeachers}</div>
-          <div className="stat-label">Teachers</div>
-        </div>
+      <div onClick={() => navigate('/teachers')}>
+        <StatCard title="Teachers" value={stats.totalTeachers} icon="👨‍🏫" color="#34a853" />
       </div>
-      <div className="stat-card clickable" style={{ '--accent-color': '#fbbc04' }} onClick={() => navigate('/classes')}>
-        <div className="stat-icon gradient-yellow"><span className="stat-emoji">🏫</span></div>
-        <div className="stat-content">
-          <div className="stat-value">{stats.totalClasses}</div>
-          <div className="stat-label">Classes</div>
-        </div>
+      <div onClick={() => navigate('/classes')}>
+        <StatCard title="Classes" value={stats.totalClasses} icon="🏫" color="#fbbc04" />
       </div>
     </>
   )
 
   const renderFacultyStats = () => (
     <>
-      <div className="stat-card" style={{ '--accent-color': '#4285f4' }}>
-        <div className="stat-icon gradient-blue"><span className="stat-emoji">📚</span></div>
-        <div className="stat-content">
-          <div className="stat-value">{stats.myClasses}</div>
-          <div className="stat-label">My Classes Today</div>
-        </div>
-      </div>
-      <div className="stat-card clickable" style={{ '--accent-color': '#fbbc04' }} onClick={() => navigate('/notifications')}>
-        <div className="stat-icon gradient-yellow"><span className="stat-emoji">🔔</span></div>
-        <div className="stat-content">
-          <div className="stat-value">{stats.unreadNotifications}</div>
-          <div className="stat-label">New Notifications</div>
-        </div>
+      <StatCard title="My Classes Today" value={stats.myClasses} icon="📚" color="#4285f4" />
+      <div onClick={() => navigate('/notifications')}>
+        <StatCard title="Notifications" value={stats.unreadNotifications} icon="🔔" color="#fbbc04" />
       </div>
     </>
   )
 
   const renderStudentStats = () => (
     <>
-      <div className="stat-card" style={{ '--accent-color': '#4285f4' }}>
-        <div className="stat-icon gradient-blue"><span className="stat-emoji">🎓</span></div>
-        <div className="stat-content">
-          <div className="stat-value">{stats.myRoutineClasses}</div>
-          <div className="stat-label">Upcoming Classes</div>
-        </div>
-      </div>
-      <div className="stat-card clickable" style={{ '--accent-color': '#fbbc04' }} onClick={() => navigate('/notifications')}>
-        <div className="stat-icon gradient-yellow"><span className="stat-emoji">📍</span></div>
-        <div className="stat-content">
-          <div className="stat-value">{stats.unreadNotifications}</div>
-          <div className="stat-label">Notices</div>
-        </div>
+      <StatCard title="Upcoming Classes" value={stats.myRoutineClasses} icon="🎓" color="#4285f4" />
+      <div onClick={() => navigate('/notifications')}>
+        <StatCard title="Notices" value={stats.unreadNotifications} icon="📍" color="#fbbc04" />
       </div>
     </>
   )
@@ -105,7 +71,7 @@ function Dashboard({ user }) {
       <div className="dashboard-header">
         <h1>Dashboard Error</h1>
         <p className="subtitle">{error || 'Could not load dashboard statistics.'}</p>
-        <button className="primary-button" style={{ marginTop: '1rem' }} onClick={() => {
+        <button className="btn-primary" style={{ marginTop: '1rem' }} onClick={() => {
           localStorage.clear();
           navigate('/login');
         }}>Return to Login</button>

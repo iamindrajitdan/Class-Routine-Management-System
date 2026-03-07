@@ -9,7 +9,7 @@ const Reports = () => {
         setDownloading(format);
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8080/api/v1/reports/${format}`, {
+            const response = await axios.get(`/api/v1/reports/${format}`, {
                 headers: { Authorization: `Bearer ${token}` },
                 responseType: 'blob'
             });
@@ -31,10 +31,10 @@ const Reports = () => {
 
     return (
         <div className="dashboard-container">
-            <div className="page-header">
-                <div className="header-content">
+            <div className="dashboard-header">
+                <div>
                     <h1>Institutional Reports</h1>
-                    <p>Export class routines and schedules to document formats.</p>
+                    <p className="subtitle">Export class routines and schedules to document formats.</p>
                 </div>
             </div>
 

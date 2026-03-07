@@ -9,6 +9,7 @@ const Subjects = () => {
     const { showToast } = useToast();
     const [subjects, setSubjects] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({ code: '', name: '', creditHours: 3, programId: '' });
     const [programs, setPrograms] = useState([]);
@@ -23,13 +24,18 @@ const Subjects = () => {
             const headers = { Authorization: `Bearer ${token}` };
             const [subjRes, progRes] = await Promise.all([
                 axios.get('/api/v1/subjects', { headers }),
-                axios.get('/api/v1/programs', { headers })
+                axios.get('/api/v1/programs', { headers }).catch(err => {
+                    console.error('Programs API failed matching:', err);
+                    return { data: [] }; // Fallback for missing programs endpoint
+                })
             ]);
-            setSubjects(subjRes.data);
-            setPrograms(progRes.data);
+            setSubjects(subjRes.data || []);
+            setPrograms(progRes.data || []);
             setLoading(false);
+            setError(null);
         } catch (error) {
             console.error('Error fetching subjects:', error);
+            setError('Failed to load subjects. Please check the backend.');
             setLoading(false);
         }
     };
@@ -61,7 +67,7 @@ const Subjects = () => {
 
             <div className="section">
                 <div className="activity-card">
-                    {loading ? <p>Loading...</p> : (
+                    {loading ? <p>Loading...</p> : error ? <p className="error-message">{error}</p> : (
                         <table className="data-table">
                             <thead>
                                 <tr>

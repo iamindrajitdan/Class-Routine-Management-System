@@ -13,6 +13,10 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+enum LessonType {
+    THEORY, LAB, SEMINAR
+}
+
 /**
  * Lesson Entity (specific teaching unit within a subject)
  * Requirements: 6.2, 6.3
@@ -39,6 +43,13 @@ public class Lesson {
     @NotNull
     @Column(nullable = false)
     private Integer sequenceNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private LessonType type = LessonType.THEORY;
+
+    @Column(nullable = false)
+    private Integer durationMinutes = 60;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -99,6 +110,22 @@ public class Lesson {
 
     public void setSequenceNumber(Integer sequenceNumber) {
         this.sequenceNumber = sequenceNumber;
+    }
+
+    public LessonType getType() {
+        return type;
+    }
+
+    public void setType(LessonType type) {
+        this.type = type;
+    }
+
+    public Integer getDurationMinutes() {
+        return durationMinutes;
+    }
+
+    public void setDurationMinutes(Integer durationMinutes) {
+        this.durationMinutes = durationMinutes;
     }
 
     public Subject getSubject() {
