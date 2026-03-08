@@ -166,6 +166,9 @@
                         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                         <nvdMaxRetryCount>10</nvdMaxRetryCount>
                         <nvdDelay>10000</nvdDelay>
+                        <suppressionFiles>
+                            <suppressionFile>suppressions.xml</suppressionFile>
+                        </suppressionFiles>
                     </configuration>
                 </plugin>
             </plugins>
