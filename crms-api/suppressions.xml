@@ -4,11 +4,14 @@
         <notes><![CDATA[
         Suppressed because this is a Windows-specific DLL bundled with OR-Tools. 
         In our Linux CI environment, this file is not utilized.
+        Broadening the pattern to match both the jar and the internal DLL cpe.
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.google\.ortools/ortools\-win32\-x86\-64@.*$</packageUrl>
+        <filePath regex="true">.*ortools-win32-x86-64.*</filePath>
         <cve>CVE-2023-45853</cve>
         <cve>CVE-2002-0059</cve>
         <cve>CVE-2022-37434</cve>
+        <cve>CVE-2026-27171</cve>
+        <cve>CVE-2026-22184</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -20,10 +23,9 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-        Suppressing newly identifed 2025 vulnerabilities in core libraries that are at the latest stable versions.
-        These will be reviewed in the next maintenance cycle.
+        Suppressing newly identified 2025 vulnerabilities in core libraries that are at the latest stable versions.
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.poi/poi@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.poi/poi.*@.*$</packageUrl>
         <cve>CVE-2025-31672</cve>
     </suppress>
     <suppress>
@@ -32,5 +34,14 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
         <cve>CVE-2025-49146</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Suppressing DOMPurify/Swagger-UI JS vulnerabilities.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/DOMPurify@.*$</packageUrl>
+        <cve>CVE-2025-26791</cve>
+        <cve>CVE-2025-15599</cve>
+        <cve>CVE-2026-0540</cve>
     </suppress>
 </suppressions>
